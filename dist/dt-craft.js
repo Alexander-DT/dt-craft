@@ -1,7 +1,6 @@
-/*! dt-craft — Digital Treasury craft layer
- *  Motion, shaders and interaction for the Treasury (Vault) build.
- *  Pair dt-craft.css with dt-craft.js; both expect the markup hooks
- *  documented in README.md.
+/*! dt-craft - Digital Treasury craft layer
+ *  Motion, shaders and interaction for the Vault build.
+ *  See README.md for the markup hooks this expects.
  */
 (function () {
   'use strict';
@@ -1139,6 +1138,28 @@
   asciiRipple(document.getElementById('megaFx'), document.getElementById('mega'), {});
   asciiRipple(document.getElementById('footFx'), document.querySelector('.site-foot'),
               { font: 14, maxAlpha: .38, ambient: true });
+
+  /* =========================================================
+     WORDMARK FIT — size the mark to its container, not the viewport.
+     A vw-based clamp cannot know the container's padding, so at some
+     widths the mark always overflowed and clipped.
+     ========================================================= */
+  (function fitWordmark() {
+    var el = document.querySelector('.wordmark span');
+    if (!el) return;
+    var host = el.parentElement;
+    function fit() {
+      el.style.fontSize = '200px';
+      var natural = el.scrollWidth;
+      var avail = host.clientWidth;
+      if (natural > 0 && avail > 0) {
+        el.style.fontSize = Math.floor(200 * (avail / natural)) + 'px';
+      }
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+    else setTimeout(fit, 400);
+    addEventListener('resize', fit, { passive: true });
+  })();
 
   /* =========================================================
      16. PERF HUD — add ?perf=1 to the URL. Never runs otherwise.

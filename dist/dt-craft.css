@@ -1,7 +1,6 @@
-/*! dt-craft — Digital Treasury craft layer
- *  Motion, shaders and interaction for the Treasury (Vault) build.
- *  Pair dt-craft.css with dt-craft.js; both expect the markup hooks
- *  documented in README.md.
+/*! dt-craft - Digital Treasury craft layer
+ *  Motion, shaders and interaction for the Vault build.
+ *  See README.md for the markup hooks this expects.
  */
 /* ============================================================
    DIGITAL TREASURY — "VAULT" DIRECTION
@@ -1104,7 +1103,7 @@ input[type="range"]::-moz-range-thumb {
 .wordmark span {
   display: block;
   font-family: "Bodoni Moda", Georgia, serif; font-weight: 500;
-  font-size: clamp(2.6rem, 15.5vw, 15rem);
+  font-size: clamp(2.2rem, 14vw, 15rem);   /* fallback until fitWordmark runs */
   letter-spacing: -.045em; white-space: nowrap;
   background: linear-gradient(180deg, var(--paper) 0%, rgba(239,235,226,.22) 62%, rgba(239,235,226,.04) 100%);
   -webkit-background-clip: text; background-clip: text;
