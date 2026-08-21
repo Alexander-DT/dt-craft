@@ -133,39 +133,20 @@
           || cv.getContext('experimental-webgl');
     if (!gl) { cv.style.display = 'none'; return; }
 
-    var N = 16;                                  // trail samples
     var VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     var FS = [
       'precision mediump float;',
-      'uniform vec2 uRes; uniform float uTime; uniform vec3 uTrail[16];',
+      'uniform vec2 uRes; uniform float uTime;',
       'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}',
       'float noise(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.0-2.0*f);',
       ' return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);}',
       'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p*=2.03;a*=.5;}return v;}',
-      'float seg(vec2 p, vec2 a, vec2 b, out float t){',
-      ' vec2 pa=p-a,ba=b-a; float d=max(dot(ba,ba),1e-7);',
-      ' t=clamp(dot(pa,ba)/d,0.0,1.0);',
-      ' return length(pa-ba*t);}',
       'void main(){',
       '  vec2 uv=(gl_FragCoord.xy-0.5*uRes)/min(uRes.x,uRes.y);',
       '  float t=uTime*0.021;',
-      /* walk the ribbon once: gather both a glow and a displacement, so the
-         cursor disturbs the metal like a fluid rather than just lighting it */
-      '  float glow=0.0; vec2 push=vec2(0.0);',
-      '  for(int i=0;i<15;i++){',
-      '    vec3 A=uTrail[i]; vec3 B=uTrail[i+1];',
-      '    if(A.z<=0.002 && B.z<=0.002) continue;',
-      '    float k; float dd=seg(uv,A.xy,B.xy,k);',
-      '    float str=mix(A.z,B.z,k);',
-      /* older samples taper: tighter falloff and less light */
-      '    float w=110.0+300.0*(1.0-str);',
-      '    float g=exp(-dd*dd*w)*str;',
-      '    glow+=g;',
-      '    vec2 n=uv-mix(A.xy,B.xy,k);',
-      '    push+=normalize(n+vec2(1e-5))*g*0.05;',
-      '  }',
-      '  glow=min(glow,1.6);',
-      '  vec2 duv=uv-push;',
+      /* ambient field only — the cursor is the fluid layer's job,
+         and it is masked to the four sections that asked for it */
+      '  vec2 duv=uv;',
       '  vec2 q=vec2(fbm(duv*1.1+t),fbm(duv*1.1+vec2(4.3,1.7)-t*0.7));',
       '  float f=fbm(duv*1.1+2.4*q);',
       '  f=clamp(f,0.,1.);',
@@ -174,7 +155,6 @@
       '  vec3 warm  =vec3(0.230,0.170,0.072);',
       '  vec3 col=mix(ink,bronze,smoothstep(0.30,0.68,f));',
       '  col=mix(col,warm,smoothstep(0.70,0.96,f)*0.65);',
-      '  col+=vec3(0.155,0.113,0.047)*glow;',
       '  gl_FragColor=vec4(col,1.0);',
       '}'
     ].join('\n');
@@ -197,8 +177,7 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     var uRes = gl.getUniformLocation(pr, 'uRes'),
-        uTime = gl.getUniformLocation(pr, 'uTime'),
-        uTrail = gl.getUniformLocation(pr, 'uTrail');
+        uTime = gl.getUniformLocation(pr, 'uTime');
 
     var dpr = Math.min(window.devicePixelRatio || 1, 1);
     function size() {
@@ -210,21 +189,6 @@
     size();
     addEventListener('resize', size, { passive: true });
 
-    var trail = new Float32Array(N * 3);
-    /* Sampling is paced by the FRAME, not by pointermove. A follower eases
-       toward the raw cursor, so the gap between consecutive samples is bounded
-       by the lerp — they always overlap, and the ribbon can never break.
-       Throttling on pointermove was what made every tick visible. */
-    var rawX = 0, rawY = 0, folX = 0, folY = 0, has = false;
-    if (!touch && !reduce) {
-      addEventListener('pointermove', function (e) {
-        var mn = Math.min(cv.clientWidth, cv.clientHeight);
-        rawX = (e.clientX - cv.clientWidth / 2) / mn;
-        rawY = (cv.clientHeight / 2 - e.clientY) / mn;
-        if (!has) { folX = rawX; folY = rawY; has = true; }
-      }, { passive: true });
-    }
-
     var t0 = 0, hidden = false;
     document.addEventListener('visibilitychange', function () { hidden = document.hidden; });
 
@@ -233,23 +197,7 @@
       if (hidden) { t0 = now; return; }
       if (!t0) t0 = now;
 
-      if (has) {
-        folX += (rawX - folX) * 0.30;
-        folY += (rawY - folY) * 0.30;
-        var dx = folX - trail[(N - 1) * 3], dy = folY - trail[(N - 1) * 3 + 1];
-        // only lay a new sample once the follower has actually travelled
-        if (dx * dx + dy * dy > 0.0000045) {
-          for (var j = 0; j < (N - 1) * 3; j++) trail[j] = trail[j + 3];
-          var e = (N - 1) * 3;
-          trail[e] = folX; trail[e + 1] = folY; trail[e + 2] = 1;
-        }
-      }
-      for (var i = 2; i < trail.length; i += 3) {
-        if (trail[i] > 0) trail[i] = Math.max(0, trail[i] - 0.019);
-      }
-
       gl.uniform1f(uTime, reduce ? 8.0 : (now - t0) * 0.001);
-      gl.uniform3fv(uTrail, trail);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
     requestAnimationFrame(frame);
