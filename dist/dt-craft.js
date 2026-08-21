@@ -1,5 +1,4 @@
 /*! dt-craft - Digital Treasury craft layer
- *  Motion, shaders and interaction for the Vault build.
  *  See README.md for the markup hooks this expects.
  */
 (function () {

@@ -1,5 +1,4 @@
 /*! dt-craft - Digital Treasury craft layer
- *  Motion, shaders and interaction for the Vault build.
  *  See README.md for the markup hooks this expects.
  */
 /* ============================================================
@@ -261,21 +260,42 @@ section, .ticker-sec, .site-foot { position: relative; z-index: 1; }
 .mega-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
 @media (min-width: 1040px) { .mega-grid { grid-template-columns: 250px 1.35fr .95fr; gap: 46px; align-items: start; } }
 
-.mega-cats { position: relative; display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--line-2); }
+.mega-cats { position: relative; display: flex; flex-direction: column; gap: 8px; }
 .mega-ind {
-  position: absolute; left: -1px; width: 1px; top: 0; height: 0; opacity: 0;
+  position: absolute; left: -7px; width: 2px; top: 0; height: 0; opacity: 0;
+  border-radius: 2px;
   background: linear-gradient(180deg, transparent, var(--gold) 22%, var(--gold) 78%, transparent);
   transition: transform .5s var(--ease), height .5s var(--ease), opacity .3s ease;
 }
+/* Each category is its own plate, like the featured build. A flat opacity
+   fade let the ripple behind read straight through the inactive ones and
+   muddied them; an opaque surface keeps every box legible. */
 .mcat {
-  position: relative; text-align: left; cursor: pointer;
-  background: none; border: 0; font: inherit;
-  padding: 14px 16px; opacity: .45;
+  position: relative; text-align: left; cursor: pointer; font: inherit;
+  padding: 14px 16px; border-radius: 3px;
+  border: 1px solid var(--line-2);
+  background: linear-gradient(168deg, rgba(26,30,41,.94), rgba(13,16,22,.96));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
   display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: baseline;
-  transition: opacity .4s var(--ease);
+  transition: border-color .45s var(--ease), background .45s var(--ease),
+              box-shadow .45s var(--ease), transform .5s var(--ease);
 }
-.mcat:hover { opacity: .78; }
-.mcat.is-on { opacity: 1; }
+.mcat:hover {
+  border-color: var(--line);
+  background: linear-gradient(168deg, rgba(33,38,51,.96), rgba(16,19,26,.97));
+  transform: translateX(2px);
+}
+.mcat.is-on {
+  border-color: var(--gold-lo);
+  background: linear-gradient(168deg, rgba(40,35,24,.96), rgba(18,17,17,.97));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 16px 30px -22px rgba(0,0,0,.9);
+}
+/* the copy carries the state now, not a blanket opacity */
+.mcat .mcat-b b { color: var(--paper-3); transition: color .4s var(--ease); }
+.mcat .mcat-b em { color: #5F6470; transition: color .4s var(--ease); }
+.mcat:hover .mcat-b b { color: var(--paper-2); }
+.mcat.is-on .mcat-b b { color: var(--paper); }
+.mcat.is-on .mcat-b em { color: var(--paper-3); }
 .mcat-i { font-size: .6rem; letter-spacing: .14em; color: var(--gold-lo); }
 .mcat.is-on .mcat-i { color: var(--gold); }
 .mcat-b b {
