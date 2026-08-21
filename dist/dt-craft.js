@@ -1087,6 +1087,52 @@
               { font: 14, maxAlpha: .38, ambient: true });
 
   /* =========================================================
+     WORK SEQUENCER — each card regains its colour in turn as the
+     section passes: the feature first, then left-then-right down each
+     row. Cards in one row share a y position, so a purely positional
+     test would light them together; the order comes from DOM index.
+     ========================================================= */
+  (function workSequence() {
+    var sec = document.getElementById('work');
+    if (!sec) return;
+    var feature = sec.querySelector('.wfeat');
+    var grid = [].slice.call(sec.querySelectorAll('.wgrid .wcard'));
+    var cards = (feature ? [feature] : []).concat(grid);
+    if (!cards.length) return;
+
+    if (reduce) { cards.forEach(function (c) { c.style.setProperty('--lit', 1); }); return; }
+
+    var last = cards.map(function () { return -1; });
+    var vh = innerHeight;
+    addEventListener('resize', function () { vh = innerHeight; }, { passive: true });
+
+    var SPAN = 0.62;                       // fraction of the run used for the sequence
+    var RAMP = 0.16;                       // how gradually one card comes up
+
+    (function loop() {
+      requestAnimationFrame(loop);
+      var r = sec.getBoundingClientRect();
+      if (r.bottom < -vh * 0.4 || r.top > vh * 1.4) return;
+
+      // 0 as the section's top reaches the lower third, 1 once it has travelled
+      var travel = r.height + vh * 0.35;
+      var p = (vh * 0.72 - r.top) / travel;
+      p = p < 0 ? 0 : p > 1 ? 1 : p;
+
+      for (var i = 0; i < cards.length; i++) {
+        var start = (i / cards.length) * SPAN;
+        var k = (p - start) / RAMP;
+        k = k < 0 ? 0 : k > 1 ? 1 : k;
+        k = k * k * (3 - 2 * k);           // smoothstep, so nothing snaps on
+        if (Math.abs(k - last[i]) > 0.01) {
+          cards[i].style.setProperty('--lit', k.toFixed(3));
+          last[i] = k;
+        }
+      }
+    })();
+  })();
+
+  /* =========================================================
      WORDMARK FIT — size the mark to its container, not the viewport.
      A vw-based clamp cannot know the container's padding, so at some
      widths the mark always overflowed and clipped.

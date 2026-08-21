@@ -861,7 +861,6 @@ input[type="range"]::-moz-range-thumb {
 /* hovering one card lets the rest recede, the same move as the discipline row */
 .wgrid:hover .wcard { opacity: .42; }
 .wgrid:hover .wcard:hover { opacity: 1; }
-.work-sec:hover .wgrid .wcard:not(:hover) { opacity: .42; }
 
 .wcard {
   position: relative; display: block; overflow: hidden;
@@ -876,12 +875,23 @@ input[type="range"]::-moz-range-thumb {
               0 0 34px -14px rgba(227,185,107,.2);
 }
 .wshot { display: block; overflow: hidden; aspect-ratio: 16 / 10; }
+/* --lit runs 0..1 and is written by the scroll sequencer below; hover simply
+   forces it to 1, so scroll and hover drive the same single treatment */
+.wcard { --lit: 0; }
+.wcard:hover { --lit: 1; }
 .wshot img {
   display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center;
-  filter: grayscale(.94) brightness(.44) contrast(1.05) sepia(.16);
-  transition: transform 1.2s var(--ease), filter .8s var(--ease);
+  filter:
+    grayscale(calc(94% * (1 - var(--lit))))
+    brightness(calc(44% + 42% * var(--lit)))
+    contrast(calc(105% - 5% * var(--lit)))
+    sepia(calc(16% * (1 - var(--lit))));
+  transition: transform 1.2s var(--ease), filter .55s var(--ease);
 }
-.wcard:hover .wshot img { transform: scale(1.05); filter: grayscale(0) brightness(.86) contrast(1) sepia(0); }
+.wcard:hover .wshot img { transform: scale(1.05); }
+/* the frame warms with the same value */
+.wcard { border-color: color-mix(in srgb, var(--gold-lo) calc(var(--lit) * 100%), var(--line)); }
+.wveil { opacity: calc(1 - 0.22 * var(--lit)); transition: opacity .55s var(--ease); }
 .wveil {
   position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(180deg, rgba(8,9,13,.5), rgba(8,9,13,.14) 38%, rgba(8,9,13,.95));
@@ -1319,7 +1329,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* ---------- perf HUD (only with ?perf=1) ---------- */
 .perf {
-  position: fixed; right: 14px; bottom: 14px; z-index: 95;
+  position: fixed; left: 14px; bottom: 14px; z-index: 95;
   width: 230px; padding: 12px 13px 11px;
   font-family: "IBM Plex Mono", monospace; font-size: 10.5px; line-height: 1.55;
   color: var(--paper-2); background: rgba(8,9,13,.9);
