@@ -1031,7 +1031,7 @@
     var ctx = cv.getContext('2d');
     var CHARS = ['\u00b7', '.', '-', '~', '=', '+', 'x', '*', 'o'];
     var LAST = CHARS.length - 1;
-    var FONT = opts.font || 13, DAMP = .96, SPEED = .48;
+    var FONT = opts.font || 13, DAMP = opts.damping || .925, SPEED = .48;
     var MAXA = opts.maxAlpha || .3, STEPS = 14;
     var TINT = opts.tint || '227,185,107';
     var CSP = FONT * .85, RSP = FONT * 1.15;
@@ -1120,7 +1120,7 @@
         var ro2 = y2 * cols, py = y2 * RSP;
         for (var x2 = 1; x2 < cols - 1; x2++) {
           var v = Math.abs(b1[ro2 + x2]);
-          if (v > .008) {
+          if (v > .014) {
             active++;
             ctx.fillStyle = pal[Math.min(v * 6 | 0, STEPS)];
             ctx.fillText(CHARS[Math.min(v * 2.2 | 0, LAST)], x2 * CSP, py);
