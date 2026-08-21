@@ -1,5 +1,5 @@
 /*! dt-craft - Digital Treasury craft layer
- *  See README.md for the markup hooks this expects.
+ *  Every module tolerates a page without its markup.
  */
 (function () {
   'use strict';
@@ -11,6 +11,9 @@
      ========================================================= */
   (function shader() {
     var cv = document.getElementById('gl');
+    // every module must tolerate a page that does not carry its markup — this
+    // bundle now serves more than one page
+    if (!cv) return;
     var gl = cv.getContext('webgl', { antialias: false, alpha: true, powerPreference: 'high-performance' })
           || cv.getContext('experimental-webgl');
     if (!gl) { cv.style.display = 'none'; return; }
