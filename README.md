@@ -15,11 +15,23 @@ Webflow caps a registered inline script at **2,000 characters**. This layer is
 from `assets.itsoffbrand.io`, not from Webflow).
 
 ```
-dist/dt-craft.css     65 KB   all styling, tokens included
-dist/dt-craft.js      81 KB   every system, self-starting
-index.html                    the full demo page
-markup.reference.html         the DOM the JS expects
+dist/dt-craft.css              all styling, tokens included
+dist/dt-craft.js               every system — expects the markup below
+dist/dt-craft.standalone.js    the same, plus the markup, self-injecting
+index.html                     the full demo page
+markup.reference.html          the DOM dt-craft.js expects
 ```
+
+**Which JS file?**
+
+- **`dt-craft.standalone.js`** — for a host page with no markup of its own (a
+  blank Webflow page). It injects the whole Vault page, then runs. Nothing to
+  build in Webflow. Content is *not* CMS-editable.
+- **`dt-craft.js`** — once the sections are rebuilt natively in Webflow with
+  the hooks listed below, so content is editable.
+
+The standalone file no-ops if `#vp` already exists, so it is safe to leave in
+place while you rebuild sections natively one at a time.
 
 ---
 
@@ -31,13 +43,17 @@ markup.reference.html         the DOM the JS expects
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.0.3/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.1.0/dist/dt-craft.css">
 ```
 
 **Project Settings → Custom Code → Before `</body>`:**
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.0.3/dist/dt-craft.js" defer></script>
+<!-- blank page: injects its own markup -->
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.1.0/dist/dt-craft.standalone.js" defer></script>
+
+<!-- or, once the sections exist natively in Webflow -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.1.0/dist/dt-craft.js" defer></script> -->
 ```
 
 > Pin the version tag. Never point at `@main` — a commit would silently change
