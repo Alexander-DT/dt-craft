@@ -1,0 +1,554 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treasury Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+
+
+<!-- ============================================================
+     NAV + MEGA MENU
+     Lives OUTSIDE #vp: position:fixed is relative to the nearest
+     transformed ancestor, and #scroller is transformed every frame.
+     ============================================================ -->
+<div class="mega-scrim" id="scrim" aria-hidden="true"></div>
+
+<!-- command palette -->
+<div class="pal" id="pal" role="dialog" aria-modal="true" aria-labelledby="palLabel" hidden>
+  <div class="pal-scrim" id="palScrim"></div>
+  <div class="pal-box" role="document">
+    <span class="tick tl" aria-hidden="true"></span>
+    <span class="tick tr" aria-hidden="true"></span>
+    <span class="tick bl" aria-hidden="true"></span>
+    <span class="tick br" aria-hidden="true"></span>
+    <h2 class="sr-only" id="palLabel">Search services and sections</h2>
+    <div class="pal-top">
+      <span class="pal-ic" aria-hidden="true">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
+      </span>
+      <input id="palInput" type="text" autocomplete="off" spellcheck="false"
+             placeholder="Search services, pages and sections&hellip;"
+             role="combobox" aria-expanded="true" aria-controls="palList" aria-autocomplete="list">
+      <span class="pal-esc mono" aria-hidden="true">ESC</span>
+    </div>
+    <ul class="pal-list" id="palList" role="listbox" aria-label="Results"></ul>
+    <p class="pal-empty mono" id="palEmpty" hidden>No match</p>
+    <div class="pal-foot mono">
+      <span><b>&uarr;&darr;</b> navigate</span>
+      <span><b>&crarr;</b> open</span>
+      <span><b>esc</b> close</span>
+    </div>
+  </div>
+</div>
+
+<nav class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a href="#" class="brand" aria-label="Digital Treasury home">
+      <img class="brand-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/6676118d378fbd6c4f462a17_Digital%20Treasury%20-%20Logo%20-%20White.avif" alt="Digital Treasury" width="1000" height="246" decoding="async">
+    </a>
+    <div class="nav-links mono">
+      <button type="button" class="nav-trigger" id="svcTrigger" aria-expanded="false" aria-controls="mega" aria-haspopup="true">
+        Services <span class="chev" aria-hidden="true"></span>
+      </button>
+      <a href="#work">Work</a>
+      <a href="#instrument">Returns</a>
+      <a href="#clients">Clients</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="nav-right">
+      <button type="button" class="kbd" id="kbdChip" aria-label="Search"><span id="kbdLabel">&#8984; K</span></button>
+    <a href="https://cal.com/digitaltreasury/discovery?user=digitaltreasury" target="_blank" rel="noopener"
+       class="btn" data-mag data-cal-link="digitaltreasury/discovery" data-cal-namespace="discovery"
+       data-cal-config='{"layout":"month_view"}'><span class="btn-l">Book a Meeting</span></a>
+  </div>
+
+  <!-- ---------- the drawer ---------- -->
+  <div class="mega" id="mega" role="region" aria-label="Services menu">
+    <canvas id="megaFx" aria-hidden="true"></canvas>
+    <div class="mega-in wrap">
+      <div class="mega-grid">
+
+        <div class="mega-cats" role="tablist" aria-orientation="vertical" aria-label="Service areas">
+          <span class="mega-ind" id="megaInd" aria-hidden="true"></span>
+          <button type="button" class="mcat is-on" data-cat="web" role="tab" aria-selected="true" aria-controls="pane-web" id="tab-web">
+            <span class="mcat-i mono">01</span>
+            <span class="mcat-b"><b>Web</b><em>Design, build &amp; care</em></span>
+          </button>
+          <button type="button" class="mcat" data-cat="seo" role="tab" aria-selected="false" aria-controls="pane-seo" id="tab-seo" tabindex="-1">
+            <span class="mcat-i mono">02</span>
+            <span class="mcat-b"><b>SEO</b><em>Traffic that converts</em></span>
+          </button>
+          <button type="button" class="mcat" data-cat="platforms" role="tab" aria-selected="false" aria-controls="pane-platforms" id="tab-platforms" tabindex="-1">
+            <span class="mcat-i mono">03</span>
+            <span class="mcat-b"><b>Platforms</b><em>Portals &amp; internal tools</em></span>
+          </button>
+        </div>
+
+        <div class="mega-panes">
+          <div class="mpane is-on" data-pane="web" id="pane-web" role="tabpanel" aria-labelledby="tab-web">
+            <p class="mpane-lbl mono">Web</p>
+        <a href="/web" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11"/><path d="M1.5 5.5h13"/></svg></span><span class="mlink-t"><b>Website design</b><em>Bespoke, never a template</em></span></a>
+        <a href="/web" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5.5 3.5 2 8l3.5 4.5M10.5 3.5 14 8l-3.5 4.5"/></svg></span><span class="mlink-t"><b>Website development</b><em>Webflow &amp; headless builds</em></span></a>
+        <a href="/web" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 12.5 8 3.5l6 9z"/></svg></span><span class="mlink-t"><b>Conversion optimisation</b><em>Turn traffic into enquiries</em></span></a>
+        <a href="/web/hosting" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="3" width="13" height="4"/><rect x="1.5" y="9" width="13" height="4"/></svg></span><span class="mlink-t"><b>Hosting &amp; care plans</b><em>Managed, monitored, backed up</em></span></a>
+        <a href="/portfolio" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><path d="M8 2.5v11"/></svg></span><span class="mlink-t"><b>Our work</b><em>Recent builds &amp; results</em></span></a>
+          </div>
+          <div class="mpane" data-pane="seo" id="pane-seo" role="tabpanel" aria-labelledby="tab-seo" hidden>
+            <p class="mpane-lbl mono">SEO</p>
+        <a href="/seo" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2 13.5h12"/><rect x="3" y="8" width="2.6" height="5.5"/><rect x="7" y="5" width="2.6" height="8.5"/><rect x="11" y="2.5" width="2.6" height="11"/></svg></span><span class="mlink-t"><b>Technical SEO</b><em>Crawl, index, Core Web Vitals</em></span></a>
+        <a href="/seo" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2.5 4h11M2.5 8h7M2.5 12h9"/></svg></span><span class="mlink-t"><b>On-page SEO</b><em>Structure, metadata, internal links</em></span></a>
+        <a href="/seo" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="3" y="1.5" width="10" height="13"/><path d="M5.5 5h5M5.5 8h5M5.5 11h3"/></svg></span><span class="mlink-t"><b>Content strategy</b><em>Briefs written to rank</em></span></a>
+        <a href="/seo" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="4.5" cy="8" r="2.6"/><circle cx="11.5" cy="8" r="2.6"/><path d="M7.1 8h1.8"/></svg></span><span class="mlink-t"><b>Link building</b><em>Earned authority, no PBNs</em></span></a>
+        <a href="/services/seo-packages" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M8 1.8 14 8l-6 6.2L2 8z"/></svg></span><span class="mlink-t"><b>SEO packages</b><em>Monthly retainers &amp; pricing</em></span></a>
+          </div>
+          <div class="mpane" data-pane="platforms" id="pane-platforms" role="tabpanel" aria-labelledby="tab-platforms" hidden>
+            <p class="mpane-lbl mono">Platforms</p>
+        <a href="/all-services" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="8" cy="5.5" r="2.4"/><path d="M3 13.5c0-2.6 2.2-4 5-4s5 1.4 5 4"/></svg></span><span class="mlink-t"><b>Customer portals</b><em>Logged-in client experiences</em></span></a>
+        <a href="/all-services" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11"/><path d="M6 6h5M6 9.5h5"/></svg></span><span class="mlink-t"><b>Internal tools</b><em>Dashboards for your team</em></span></a>
+        <a href="/all-services" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 4.6V8l2.6 1.6"/></svg></span><span class="mlink-t"><b>Booking &amp; payments</b><em>Advanced scheduling flows</em></span></a>
+        <a href="/all-services" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M2.5 11.5 7 7l2.4 2.4L13.5 5"/><path d="M10.6 5h2.9v2.9"/></svg></span><span class="mlink-t"><b>Automations</b><em>Remove the manual steps</em></span></a>
+        <a href="/all-services" class="mlink"><span class="mlink-i"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><rect x="1.5" y="5.5" width="5" height="5"/><rect x="9.5" y="5.5" width="5" height="5"/><path d="M6.5 8h3"/></svg></span><span class="mlink-t"><b>Integrations</b><em>Connect the systems you run</em></span></a>
+          </div>
+        </div>
+
+        <a class="mfeat" href="/portfolio">
+          <p class="mono mfeat-lbl">Featured build</p>
+          <span class="mfeat-shot"><img src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca6cd29941ed286c5f380b_RTO%20Pilot.png" alt="RTOPilot" loading="lazy" decoding="async"></span>
+          <p class="mfeat-n">RTOPilot</p>
+          <p class="mfeat-d">An all-in-one training management system for education and training providers. <span>Designed, built, 2025.</span></p>
+          <span class="mfeat-go mono">View case study <span aria-hidden="true">&#8594;</span></span>
+        </a>
+      </div>
+
+      <div class="mega-foot">
+        <p>Not sure which of these you need? That's the call we're best at.</p>
+        <div class="mega-foot-r">
+          <span class="mono mega-hint" aria-hidden="true">Press &#8984;K to search services</span>
+          <a href="https://cal.com/digitaltreasury/discovery?user=digitaltreasury" target="_blank" rel="noopener"
+         data-cal-link="digitaltreasury/discovery" data-cal-namespace="discovery"
+         data-cal-config='{"layout":"month_view"}' class="btn solid sm" data-mag><span class="btn-l">Book a discovery call</span><span class="arw">&#8594;</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- film grain: unifies every layer under one material -->
+<div class="grain" aria-hidden="true"></div>
+<div class="citrail" id="citrail" aria-hidden="true"></div>
+
+<!-- the page sits on the same molten field as the hero, run far darker -->
+<canvas id="atmo" aria-hidden="true"></canvas>
+<canvas id="fluid" aria-hidden="true"></canvas>
+
+<div id="vp"><div id="scroller">
+
+
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="wrap hero-in">
+      <p class="mono eyebrow rv" style="max-width:520px">Web &amp; SEO · Melbourne, Australia</p>
+      <h1 id="h1">Maximise your <span class="it">web</span> potential.</h1>
+      <p class="lede rv">Take your budget further with direct access to the skills, knowledge and team you actually need to compete — design, search and infrastructure under one roof.</p>
+      <div class="hero-foot rv">
+        <div class="hero-cta">
+          <a href="#contact" class="btn solid" data-mag><span class="btn-l">Start a project</span><span class="arw">→</span></a>
+          <a href="#services" class="btn" data-mag><span class="btn-l">See our work</span></a>
+        </div>
+        <div class="scroll-cue mono"><i></i> Scroll</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ TICKER — two counter-moving depth planes ============ -->
+  <div class="ticker-sec">
+    <p class="mono ticker-lbl">Trusted by leading Australian businesses</p>
+    <div class="ticker-stage">
+      <div class="ticker fore">
+        <div class="ticker-track">
+          <a class="ticker-item" href="/portfolio"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/665607f47b990f0a5987d46f_Education_Horizons_Logo_RGB.svg" alt="Education Horizons" loading="lazy" decoding="async"><em class="ti-c">Education Horizons</em></a>
+          <a class="ticker-item" href="/portfolio"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/68886385c0a0ba10cc55bde8_RTOPilot%20New%20Logo-p-500.png" alt="RTOPilot" loading="lazy" decoding="async"><em class="ti-c">RTOPilot</em></a>
+          <a class="ticker-item" href="/portfolio"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/68a40a4ab92077210d1de341_diabetes%20vic.svg" alt="Diabetes Victoria" loading="lazy" decoding="async"><em class="ti-c">Diabetes Victoria</em></a>
+          <a class="ticker-item" href="/portfolio"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/66574460b49d7881937d657a_logo-universal-bio-sensors-text-white.svg" alt="Universal Biosensors" loading="lazy" decoding="async"><em class="ti-c">Universal Biosensors</em></a>
+          <a class="ticker-item" href="/portfolio"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/68a40a3a4d738cd32fe9124f_brimbank.svg" alt="Brimbank" loading="lazy" decoding="async"><em class="ti-c">Brimbank</em></a>
+          <a class="ticker-item" href="/portfolio"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/688861804668a76ec0bcce4f_tcw-logo-40-horizontal-white.svg" alt="TCW" loading="lazy" decoding="async"><em class="ti-c">TCW</em></a>
+        </div>
+      </div>
+      <div class="ticker back" aria-hidden="true">
+        <div class="ticker-track">
+          <span class="ticker-item"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/688861804668a76ec0bcce4f_tcw-logo-40-horizontal-white.svg" alt="" loading="lazy" decoding="async"></span>
+          <span class="ticker-item"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/68a40a3a4d738cd32fe9124f_brimbank.svg" alt="" loading="lazy" decoding="async"></span>
+          <span class="ticker-item"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/66574460b49d7881937d657a_logo-universal-bio-sensors-text-white.svg" alt="" loading="lazy" decoding="async"></span>
+          <span class="ticker-item"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/68a40a4ab92077210d1de341_diabetes%20vic.svg" alt="" loading="lazy" decoding="async"></span>
+          <span class="ticker-item"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/68886385c0a0ba10cc55bde8_RTOPilot%20New%20Logo-p-500.png" alt="" loading="lazy" decoding="async"></span>
+          <span class="ticker-item"><img class="ti-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/665607f47b990f0a5987d46f_Education_Horizons_Logo_RGB.svg" alt="" loading="lazy" decoding="async"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SERVICES ============ -->
+  <section class="band" id="services">
+    <div class="wrap">
+      <div class="svc-head" data-band data-ramp="0.55">
+        <div>
+          <p class="mono eyebrow rv">What we do</p>
+          <h2 class="display cta-h e-grid" data-split="grid" data-spread="0.55">Three disciplines, one accountable team.</h2>
+        </div>
+        <p class="lede rv">Most agencies sell you one of these and outsource the rest. We run all three in-house, which is why the handover between design, search and hosting never costs you a month.</p>
+      </div>
+
+      <!-- hover or focus expands one card; auto-advances until you take over -->
+      <div class="drow rv" id="drow" role="tablist" aria-label="Disciplines" data-dwell="7000">
+      <article class="dcard is-on" role="tab" tabindex="0" data-d="0"
+               aria-selected="true" aria-controls="dbody-0">
+        <span class="dsheen" aria-hidden="true"></span>
+        <span class="drule" aria-hidden="true"></span>
+        <span class="dnum mono">01</span>
+        <span class="dvert" aria-hidden="true">Web</span>
+        <span class="dimg" aria-hidden="true"><img src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5149dc641e09321517c1_EHG.png" alt="" loading="lazy" decoding="async"><span class="dimg-v"></span></span>
+        <span class="dtick tl" aria-hidden="true"></span>
+        <span class="dtick br" aria-hidden="true"></span>
+        <span class="dspine" aria-hidden="true">
+          <span class="dstat"><b>48</b><em>sites shipped</em></span>
+          <span class="dtag mono">Design &middot; Build &middot; Care</span>
+        </span>
+        <span class="dplus" aria-hidden="true"><i></i><i></i></span>
+        <div class="dbody" id="dbody-0">
+          <p class="dkick mono">Discipline 01</p>
+          <h3 class="dh">Websites that earn their keep.</h3>
+          <p class="dp">A site that doesn't just look good &mdash; one that turns traffic into customers, built by designers who actually work here.</p>
+          <ul class="dlist"><li><b>Conversion &amp; SEO optimised</b><em>Structured to rank from the first wireframe</em></li><li><b>Responsive on every device</b><em>Tested on real hardware, not just a resize</em></li><li><b>Custom design, never a template</b><em>Built around your brand, not a marketplace theme</em></li></ul>
+          <a href="/web" class="slink"><span class="btn-l">Explore web</span><span class="arw">&#8594;</span></a>
+        </div>
+      </article>
+      <article class="dcard" role="tab" tabindex="0" data-d="1"
+               aria-selected="false" aria-controls="dbody-1">
+        <span class="dsheen" aria-hidden="true"></span>
+        <span class="drule" aria-hidden="true"></span>
+        <span class="dnum mono">02</span>
+        <span class="dvert" aria-hidden="true">SEO</span>
+        <span class="dimg" aria-hidden="true"><img src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5a9ca7c9932f9ae33e36_MePACS.png" alt="" loading="lazy" decoding="async"><span class="dimg-v"></span></span>
+        <span class="dtick tl" aria-hidden="true"></span>
+        <span class="dtick br" aria-hidden="true"></span>
+        <span class="dspine" aria-hidden="true">
+          <span class="dstat"><b>3&times;</b><em>organic growth</em></span>
+          <span class="dtag mono">Technical &middot; Content &middot; Authority</span>
+        </span>
+        <span class="dplus" aria-hidden="true"><i></i><i></i></span>
+        <div class="dbody" id="dbody-1">
+          <p class="dkick mono">Discipline 02</p>
+          <h3 class="dh">Traffic with intent behind it.</h3>
+          <p class="dp">Targeted visitors from Google for the exact searches that map to what you actually sell &mdash; not vanity keywords.</p>
+          <ul class="dlist"><li><b>On-page &amp; technical SEO</b><em>Crawl, index and Core Web Vitals handled</em></li><li><b>Content written to rank</b><em>Briefs built from real SERP analysis</em></li><li><b>Earned authority</b><em>Link building without the shortcuts</em></li></ul>
+          <a href="/seo" class="slink"><span class="btn-l">Explore SEO</span><span class="arw">&#8594;</span></a>
+        </div>
+      </article>
+      <article class="dcard" role="tab" tabindex="0" data-d="2"
+               aria-selected="false" aria-controls="dbody-2">
+        <span class="dsheen" aria-hidden="true"></span>
+        <span class="drule" aria-hidden="true"></span>
+        <span class="dnum mono">03</span>
+        <span class="dvert" aria-hidden="true">Platforms</span>
+        <span class="dimg" aria-hidden="true"><img src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/682d8ca0f216d25240398269_Airpin%20(1).png" alt="" loading="lazy" decoding="async"><span class="dimg-v"></span></span>
+        <span class="dtick tl" aria-hidden="true"></span>
+        <span class="dtick br" aria-hidden="true"></span>
+        <span class="dspine" aria-hidden="true">
+          <span class="dstat"><b>11</b><em>years running</em></span>
+          <span class="dtag mono">Portals &middot; Tools &middot; Automation</span>
+        </span>
+        <span class="dplus" aria-hidden="true"><i></i><i></i></span>
+        <div class="dbody" id="dbody-2">
+          <p class="dkick mono">Discipline 03</p>
+          <h3 class="dh">Systems that remove the friction.</h3>
+          <p class="dp">Tailored experiences for your customers, or internal tools that take the manual steps out of running the business.</p>
+          <ul class="dlist"><li><b>Customer portals &amp; dashboards</b><em>Logged-in experiences worth returning to</em></li><li><b>Automated workflows</b><em>The admin nobody should still be doing by hand</em></li><li><b>Payments &amp; booking</b><em>Advanced scheduling and checkout flows</em></li></ul>
+          <a href="/all-services" class="slink"><span class="btn-l">Explore platforms</span><span class="arw">&#8594;</span></a>
+        </div>
+      </article>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ SELECTED WORK ============ -->
+  <section class="band work-sec" id="work">
+    <div class="wrap">
+      <div class="work-head" data-band data-ramp="0.5">
+        <div>
+          <p class="mono eyebrow rv">Selected work</p>
+          <h2 class="display e-rise" data-split="rise">The ledger.</h2>
+        </div>
+        <a class="slink rv" href="https://www.digitaltreasury.com.au/portfolio" target="_blank" rel="noopener"><span class="btn-l">All work</span><span class="arw">&#8594;</span></a>
+      </div>
+
+      <a class="wcard wfeat rv" href="https://www.digitaltreasury.com.au/case-studies/rto-pilot" target="_blank" rel="noopener">
+        <span class="wshot"><img src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca6cd29941ed286c5f380b_RTO%20Pilot-p-800.png" srcset="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca6cd29941ed286c5f380b_RTO%20Pilot-p-500.png 500w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca6cd29941ed286c5f380b_RTO%20Pilot-p-800.png 800w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca6cd29941ed286c5f380b_RTO%20Pilot-p-1080.png 1080w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca6cd29941ed286c5f380b_RTO%20Pilot-p-1600.png 1600w" sizes="(max-width: 760px) 92vw, 78vw" alt="RTOPilot" loading="lazy" decoding="async"></span>
+        <span class="wveil" aria-hidden="true"></span>
+        <span class="wfeat-body">
+          <span class="wchip mono">Featured build</span>
+          <span class="wtext">
+            <b>RTOPilot</b>
+            <em class="mono">Web development &amp; marketing</em>
+          </span>
+          <span class="wfeat-go mono">Read the case study <span aria-hidden="true">&#8594;</span></span>
+        </span>
+      </a>
+
+      <div class="wgrid rv">
+        <a class="wcard w-lg" href="https://www.digitaltreasury.com.au/case-studies/airpin" target="_blank" rel="noopener">
+          <span class="wshot"><img src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/682d8ca0f216d25240398269_Airpin%20(1)-p-800.png" srcset="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/682d8ca0f216d25240398269_Airpin%20(1)-p-500.png 500w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/682d8ca0f216d25240398269_Airpin%20(1)-p-800.png 800w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/682d8ca0f216d25240398269_Airpin%20(1)-p-1080.png 1080w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/682d8ca0f216d25240398269_Airpin%20(1)-p-1600.png 1600w" sizes="(max-width: 760px) 92vw, (max-width: 1100px) 46vw, 32vw" alt="Airpin" loading="lazy" decoding="async"></span>
+          <span class="wveil" aria-hidden="true"></span>
+          <span class="wmeta">
+            <span class="wtext"><b>Airpin</b><em class="mono">Development &amp; branding</em></span>
+            <span class="wgo" aria-hidden="true">&#8594;</span>
+          </span>
+        </a>
+        <a class="wcard w-sm" href="https://www.digitaltreasury.com.au/case-studies/education-horizons" target="_blank" rel="noopener">
+          <span class="wshot"><img src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5149dc641e09321517c1_EHG-p-800.png" srcset="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5149dc641e09321517c1_EHG-p-500.png 500w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5149dc641e09321517c1_EHG-p-800.png 800w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5149dc641e09321517c1_EHG-p-1080.png 1080w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5149dc641e09321517c1_EHG-p-1600.png 1600w" sizes="(max-width: 760px) 92vw, (max-width: 1100px) 46vw, 32vw" alt="Education Horizons" loading="lazy" decoding="async"></span>
+          <span class="wveil" aria-hidden="true"></span>
+          <span class="wmeta">
+            <span class="wtext"><b>Education Horizons</b><em class="mono">Designed &amp; built &middot; 2025</em></span>
+            <span class="wgo" aria-hidden="true">&#8594;</span>
+          </span>
+        </a>
+        <a class="wcard w-sm" href="https://www.digitaltreasury.com.au/case-studies/mepacs" target="_blank" rel="noopener">
+          <span class="wshot"><img src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5a9ca7c9932f9ae33e36_MePACS-p-800.png" srcset="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5a9ca7c9932f9ae33e36_MePACS-p-500.png 500w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5a9ca7c9932f9ae33e36_MePACS-p-800.png 800w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5a9ca7c9932f9ae33e36_MePACS-p-1080.png 1080w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5a9ca7c9932f9ae33e36_MePACS-p-1600.png 1600w" sizes="(max-width: 760px) 92vw, (max-width: 1100px) 46vw, 32vw" alt="MePACS" loading="lazy" decoding="async"></span>
+          <span class="wveil" aria-hidden="true"></span>
+          <span class="wmeta">
+            <span class="wtext"><b>MePACS</b><em class="mono">Case study</em></span>
+            <span class="wgo" aria-hidden="true">&#8594;</span>
+          </span>
+        </a>
+        <a class="wcard w-lg" href="https://www.digitaltreasury.com.au/case-studies/desert-to-coast" target="_blank" rel="noopener">
+          <span class="wshot"><img src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/68db76d42662f92f1a556b73_D2C%20(1)-p-800.png" srcset="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/68db76d42662f92f1a556b73_D2C%20(1)-p-500.png 500w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/68db76d42662f92f1a556b73_D2C%20(1)-p-800.png 800w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/68db76d42662f92f1a556b73_D2C%20(1)-p-1080.png 1080w, https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/68db76d42662f92f1a556b73_D2C%20(1)-p-1600.png 1600w" sizes="(max-width: 760px) 92vw, (max-width: 1100px) 46vw, 32vw" alt="Desert to Coast" loading="lazy" decoding="async"></span>
+          <span class="wveil" aria-hidden="true"></span>
+          <span class="wmeta">
+            <span class="wtext"><b>Desert to Coast</b><em class="mono">Designed &middot; 2025</em></span>
+            <span class="wgo" aria-hidden="true">&#8594;</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE INSTRUMENT ============ -->
+  <section class="band instrument-sec" id="instrument">
+    <canvas id="dots" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <div style="max-width:640px; margin-bottom:52px" data-band data-ramp="0.5">
+        <p class="mono eyebrow rv">The instrument</p>
+        <h2 class="display cta-h e-punch" data-split="punch" data-em="worth">What search is actually worth to you.</h2>
+        <p class="lede rv">Move the dials. This is the same arithmetic we run in a first meeting — no email gate, no "book a call to see your results".</p>
+      </div>
+
+      <div class="inst rv">
+        <div class="inst-l">
+          <div class="inst-hd mono"><span>Input parameters</span><b>Live</b></div>
+
+          <div class="dial">
+            <div class="dial-top"><label class="dial-lbl" for="d1">Current monthly visitors</label><span class="dial-val" id="v1">1,000</span></div>
+            <input type="range" id="d1" min="100" max="50000" step="100" value="1000" aria-describedby="h1t">
+            <p class="dial-hint" id="h1t">Your website's organic traffic today.</p>
+          </div>
+
+          <div class="dial">
+            <div class="dial-top"><label class="dial-lbl" for="d2">Expected visitor increase</label><span class="dial-val" id="v2">2.0×</span></div>
+            <input type="range" id="d2" min="1" max="8" step="0.1" value="2" aria-describedby="h2t">
+            <p class="dial-hint" id="h2t">Traffic multiplier from SEO. 1× = no change.</p>
+          </div>
+
+          <div class="dial">
+            <div class="dial-top"><label class="dial-lbl" for="d3">Website conversion rate</label><span class="dial-val" id="v3">5.0%</span></div>
+            <input type="range" id="d3" min="0.5" max="25" step="0.1" value="5" aria-describedby="h3t">
+            <p class="dial-hint" id="h3t">Visitors who become an enquiry.</p>
+          </div>
+
+          <div class="dial">
+            <div class="dial-top"><label class="dial-lbl" for="d4">Sales conversion rate</label><span class="dial-val" id="v4">20%</span></div>
+            <input type="range" id="d4" min="1" max="80" step="1" value="20" aria-describedby="h4t">
+            <p class="dial-hint" id="h4t">Enquiries that become paying customers.</p>
+          </div>
+
+          <div class="dial">
+            <div class="dial-top"><label class="dial-lbl" for="d5">Monthly revenue per customer</label><span class="dial-val" id="v5">$200</span></div>
+            <input type="range" id="d5" min="50" max="10000" step="50" value="200" aria-describedby="h5t">
+            <p class="dial-hint" id="h5t">Average recurring value of one customer.</p>
+          </div>
+        </div>
+
+        <div class="inst-r">
+          <div class="inst-hd mono"><span>Projected return</span><b id="stamp">—</b></div>
+
+          <div class="readouts">
+            <div class="ro"><div class="ro-lbl">New monthly visitors</div><div class="ro-num" id="o1">2,000</div></div>
+            <div class="ro"><div class="ro-lbl">Additional visitors</div><div class="ro-num" id="o2">1,000</div></div>
+            <div class="ro"><div class="ro-lbl">Additional leads</div><div class="ro-num" id="o3">50</div></div>
+            <div class="ro"><div class="ro-lbl">Additional sales</div><div class="ro-num" id="o4">10</div></div>
+          </div>
+
+          <div class="headline-out">
+            <div class="ro-lbl">Additional monthly revenue</div>
+            <span class="big" id="o5">$2,000</span>
+            <span class="sub">That's <b id="o6">$24,000</b> in additional revenue over twelve months.</span>
+          </div>
+
+          <div style="margin-top:24px; text-align:center">
+            <a href="#contact" class="btn" data-mag><span>Explore SEO options</span><span class="arw">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CLIENTS ============ -->
+  <section class="band" id="clients">
+    <div class="wrap">
+      <div style="max-width:600px" data-band data-ramp="0.45">
+        <p class="mono eyebrow rv">On the record</p>
+        <h2 class="display e-soft"><span class="soft" aria-hidden="true">What our clients say.</span><span class="sharp">What our clients say.</span></h2>
+      </div>
+      <div class="qrail rv" id="qrail">
+        <div class="qtrack" id="qtrack">
+
+          <article class="quote">
+            <span class="q-mark" aria-hidden="true">&#8220;</span>
+            <p class="q-body">The team at Digital Treasury supporting our website gives us peace of mind. They are super responsive and knowledgeable and we are happy to recommend their services.</p>
+            <div class="q-meta">
+              <span class="q-av" aria-hidden="true">MC</span>
+              <span class="q-id"><b>Meghann Cannon</b><em>KIT Legal</em></span>
+              <span class="q-stars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </div>
+            <div class="q-reveal" aria-hidden="true"><span class="q-reveal-in">Legal &middot; Sydney</span></div>
+          </article>
+
+          <article class="quote">
+            <span class="q-mark" aria-hidden="true">&#8220;</span>
+            <p class="q-body">Together, we worked through our SEO and website over a period of weeks &mdash; the results are evident in our new patient numbers.</p>
+            <div class="q-meta">
+              <span class="q-av" aria-hidden="true">GC</span>
+              <span class="q-id"><b>Glenys Coull</b><em>Melbourne Foot Clinic</em></span>
+              <span class="q-stars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </div>
+            <div class="q-reveal" aria-hidden="true"><span class="q-reveal-in">Healthcare &middot; VIC</span></div>
+          </article>
+
+          <article class="quote">
+            <span class="q-mark" aria-hidden="true">&#8220;</span>
+            <p class="q-body">We are so happy with the website built for our new business. It looks great, and it took just a couple of weeks for us to rank really well in Google.</p>
+            <div class="q-meta">
+              <span class="q-av" aria-hidden="true">KF</span>
+              <span class="q-id"><b>Kym Fabris</b><em>Melbourne Woodworking Courses</em></span>
+              <span class="q-stars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </div>
+            <div class="q-reveal" aria-hidden="true"><span class="q-reveal-in">Education &middot; VIC</span></div>
+          </article>
+
+          <article class="quote">
+            <span class="q-mark" aria-hidden="true">&#8220;</span>
+            <p class="q-body">They rebuilt the whole platform and still shipped on time. The difference in enquiry volume was obvious inside the first quarter.</p>
+            <div class="q-meta">
+              <span class="q-av" aria-hidden="true">RP</span>
+              <span class="q-id"><b>Operations Lead</b><em>RTOPilot</em></span>
+              <span class="q-stars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </div>
+            <div class="q-reveal" aria-hidden="true"><span class="q-reveal-in">SaaS &middot; National</span></div>
+          </article>
+
+        </div>
+        <div class="qnav">
+          <button type="button" class="qbtn" id="qprev" aria-label="Previous testimonials">&#8592;</button>
+          <span class="qprog" aria-hidden="true"><i id="qprogbar"></i></span>
+          <button type="button" class="qbtn" id="qnext" aria-label="Next testimonials">&#8594;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="cta" id="contact" data-band data-ramp="0.5">
+    <span class="cta-bloom" aria-hidden="true"></span>
+    <div class="wrap cta-in">
+      <div class="plate">
+        <span class="plate-key" aria-hidden="true"></span>
+        <span class="plate-sweep" aria-hidden="true"></span>
+        <span class="plate-cast" aria-hidden="true"></span>
+        <span class="tick tl" aria-hidden="true"></span>
+        <span class="tick tr" aria-hidden="true"></span>
+        <span class="tick bl" aria-hidden="true"></span>
+        <span class="tick br" aria-hidden="true"></span>
+
+        <h2 class="display cta-h e-rise" data-split="rise">Let's build something extraordinary.</h2>
+        <p class="lede stage-2">Tell us what you're trying to grow. We'll tell you honestly whether we're the right people for it.</p>
+        <div class="cta-row stage-3">
+          <a href="https://cal.com/digitaltreasury/discovery?user=digitaltreasury" target="_blank" rel="noopener"
+             class="pbtn gold" data-mag data-cal-link="digitaltreasury/discovery" data-cal-namespace="discovery"
+             data-cal-config='{"layout":"month_view"}'><span class="btn-l">Book a meeting</span><span class="arw">&#8594;</span></a>
+          <a href="mailto:dtclients@digitaltreasury.com.au" class="pbtn" data-mag><span class="btn-l">dtclients@digitaltreasury.com.au</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-foot" data-band data-ramp="0.55">
+    <canvas id="footFx" aria-hidden="true"></canvas>
+    <div class="wrap foot-in">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <img class="foot-logo" src="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4b47/6676118d378fbd6c4f462a17_Digital%20Treasury%20-%20Logo%20-%20White.avif" alt="Digital Treasury" width="1000" height="246" loading="lazy" decoding="async">
+          <p>Design, search and infrastructure under one roof. Melbourne, working with businesses across Australia.</p>
+          <a href="https://cal.com/digitaltreasury/discovery?user=digitaltreasury" target="_blank" rel="noopener"
+             class="btn solid sm" data-mag data-cal-link="digitaltreasury/discovery" data-cal-namespace="discovery"
+             data-cal-config='{"layout":"month_view"}'><span class="btn-l">Book a meeting</span><span class="arw">&#8594;</span></a>
+        </div>
+
+        <nav class="foot-nav" aria-label="Footer">
+          <div class="foot-col">
+            <p class="mono foot-h">Services</p>
+            <a href="/web">Web design</a>
+            <a href="/web">Development</a>
+            <a href="/seo">SEO</a>
+            <a href="/web/hosting">Hosting</a>
+          </div>
+          <div class="foot-col">
+            <p class="mono foot-h">Company</p>
+            <a href="/about-us">About us</a>
+            <a href="/portfolio">Our work</a>
+            <a href="/blogs">Articles</a>
+            <a href="/faq">FAQ</a>
+          </div>
+          <div class="foot-col">
+            <p class="mono foot-h">Connect</p>
+            <a href="mailto:dtclients@digitaltreasury.com.au">Email us</a>
+            <a href="/contact-us">Contact</a>
+            <a href="https://www.digitaltreasury.com.au/" target="_blank" rel="noopener">Live site</a>
+          </div>
+        </nav>
+      </div>
+
+      <!-- the oversized wordmark: clipped at the baseline so it reads as a
+           mark stamped into the page rather than a heading -->
+      <div class="wordmark" aria-hidden="true"><span>Digital Treasury</span></div>
+
+      <div class="foot-base mono">
+        <span>&copy; 2026 Digital Treasury &middot; Melbourne, Australia</span>
+        <span class="foot-legal">
+          <a href="/privacy-policy">Privacy</a>
+          <a href="/terms-conditions">Terms</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+
+</div></div>
+<div id="spacer" aria-hidden="true"></div>
+<div id="cur" aria-hidden="true"></div>
+
+
+
+<!-- Cal.com booking embed. If this script is blocked, every button falls back
+     to its plain href and opens the booking page in a new tab. -->
+
