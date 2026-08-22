@@ -43,17 +43,17 @@ place while you rebuild sections natively one at a time.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.2.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.4.0/dist/dt-craft.css">
 ```
 
 **Project Settings → Custom Code → Before `</body>`:**
 
 ```html
 <!-- blank page: injects its own markup -->
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.2.0/dist/dt-craft.standalone.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.4.0/dist/dt-craft.standalone.js" defer></script>
 
 <!-- or, once the sections exist natively in Webflow -->
-<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.2.0/dist/dt-craft.js" defer></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.4.0/dist/dt-craft.js" defer></script> -->
 ```
 
 > Pin the version tag. Never point at `@main` — a commit would silently change
@@ -86,6 +86,11 @@ classes; `markup.reference.html` is the authoritative copy.
 
 ### Attributes it reads
 
+Some of these are stamped for you at runtime — every `.wcard`, plus `.wfeat`,
+`.qrail` and `#drow`, is turned into a scroll band automatically, and each
+card gets its stagger offset. Build the cards in Webflow as normal; the
+arrival choreography attaches itself.
+
 | Attribute | Effect |
 |---|---|
 | `data-band` + `data-ramp` | element becomes a scroll-scrub band exposing `--k` |
@@ -104,8 +109,28 @@ classes; `markup.reference.html` is the authoritative copy.
 - **Nothing runs on touch or under `prefers-reduced-motion`.** Smooth scroll,
   custom cursor, magnetic buttons, fluid, image trail and ripples all bail out;
   layering and shadows stay.
-- **The fluid is masked to four sections** — `#services`, `#work`, `#clients`,
-  `#contact` — and explicitly subtracts `#instrument`.
+- **The fluid is masked to four sections** — `#services`, `#work`,
+  `#instrument`, `#clients` — and nowhere else. Inside those sections it
+  bounces off the section's own edges (left, right, top, bottom) instead of
+  just fading out at the crop line, the same contained feel as the ripple
+  in the mega menu and footer.
+- **Cards arrive, they don't just scroll past.** Work cards, the featured
+  card, the testimonials and the discipline row tilt up from a shallow angle
+  and settle flat, which is what gives the page chapter breaks instead of one
+  continuous ribbon.
+  - **Each work card is its own band**, keyed to when *it* enters — not to the
+    grid around it. Driving the whole grid from one band settled the lower row
+    while it was still below the fold, so that row's animation ran where
+    nobody could see it. Cards sharing a row cascade left-to-right instead,
+    since scroll position alone cannot separate them.
+  - **The image zoom is deliberately late**, holding over-scaled until the
+    card is a third of the way in so it reads as its own beat rather than
+    riding the card up.
+- **Scroll-driven values never carry a CSS transition.** `opacity` and
+  `transform` on those cards are rewritten every frame, so the eased hover
+  states ride registered `--hov` / `--dim` properties instead. Without
+  `@property` support the hover lift lands instantly and the scroll arrival
+  is unaffected.
 - **Every loop sleeps.** Canvases stop when off-screen or when the tab hides.
 - **`?perf=1`** shows a performance HUD: FPS, frame-time p50/p95/worst, long
   tasks, JS heap, plus per-layer toggles so you can attribute cost.

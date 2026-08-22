@@ -273,6 +273,61 @@
   })();
 
   /* =========================================================
+     3a-i. CARD ARRIVAL HOOKS — mark the card groups as scrub bands
+     and stamp each card's stagger offset, so the CSS can tilt them
+     in and settle them flat as their section passes.
+
+     Stamped here rather than authored in the markup: a Webflow
+     rebuild then gets the choreography for free, with no extra
+     attributes to hand-add per card. Must run before the band
+     loop below collects [data-band].
+     ========================================================= */
+  (function arrivals() {
+    /* these run their own arrival; .rv would fade the wrapper at the same
+       time and the two together read as a double entrance */
+    function band(el, ramp) {
+      if (!el) return null;
+      el.setAttribute('data-band', '');
+      el.setAttribute('data-ramp', ramp);
+      el.classList.remove('rv');
+      return el;
+    }
+    function stagger(host, sel, step) {
+      if (!host) return;
+      [].slice.call(host.querySelectorAll(sel)).forEach(function (el, i) {
+        el.style.setProperty('--th', (i * step).toFixed(3));
+        el.classList.remove('rv');
+      });
+    }
+
+    /* Every work card is its own band. One band for the whole grid keyed the
+       lower row to the grid's top, so that row finished arriving while it was
+       still below the fold and was already settled by the time it came into
+       view — the animation ran, nobody ever saw it. */
+    var grid = document.querySelector('.wgrid');
+    if (grid) {
+      grid.classList.remove('rv');
+      var cards = [].slice.call(grid.querySelectorAll('.wcard'));
+      cards.forEach(function (c) { band(c, 0.7); });
+      /* cards sharing a row share a top, so their cascade cannot come from
+         scroll — it comes from how far across the row each one sits */
+      var lag = function () {
+        var g = grid.getBoundingClientRect();
+        cards.forEach(function (c) {
+          var x = c.getBoundingClientRect().left - g.left;
+          c.style.setProperty('--th', (Math.max(0, x) / (g.width || 1) * 0.3).toFixed(3));
+        });
+      };
+      lag();
+      addEventListener('resize', lag, { passive: true });
+    }
+
+    stagger(band(document.querySelector('.qrail'), 0.5), '.quote', 0.1);
+    band(document.querySelector('.wfeat'), 0.65);
+    band(document.getElementById('drow'), 0.55);
+  })();
+
+  /* =========================================================
      3a. SCRUB BANDS — split the text, then drive --k from scroll
      ========================================================= */
   (function scrub() {
@@ -1260,7 +1315,9 @@
      15. LIQUID FLUID — a real Navier-Stokes solver on the GPU.
      Splat velocity + dye where the pointer moves, advect, add vorticity,
      then project to a divergence-free field via Jacobi pressure iterations.
-     Gated to four sections, so it only lives where it was asked for.
+     Gated to four sections, so it only lives where it was asked for — and
+     walled at each section's edges, so the flow bounces inside its box
+     instead of just fading out at the crop line.
      ========================================================= */
   (function liquid() {
     if (reduce || touch) return;
@@ -1324,19 +1381,37 @@
       'float L=texture2D(uPress,vL).x;float R=texture2D(uPress,vR).x;float T=texture2D(uPress,vT).x;float B=texture2D(uPress,vB).x;' +
       'vec2 v=texture2D(uVel,vUv).xy-vec2(R-L,T-B);gl_FragColor=vec4(v,0.,1.);}');
     /* the composite is where the section gating happens */
-    var pDraw    = prog(H + 'uniform sampler2D uT;uniform vec4 r0;uniform vec4 r1;uniform vec4 r2;uniform vec4 r3;uniform vec4 rEx;' +
+    var pDraw    = prog(H + 'uniform sampler2D uT;uniform vec4 r0;uniform vec4 r1;uniform vec4 r2;uniform vec4 r3;' +
       'float inRect(vec2 p, vec4 r){vec2 a=smoothstep(r.xy,r.xy+0.03,p);vec2 b=smoothstep(r.zw,r.zw-0.03,p);return a.x*a.y*b.x*b.y;}' +
       'void main(){vec3 c=texture2D(uT,vUv).rgb;' +
       'float m=max(max(inRect(vUv,r0),inRect(vUv,r1)),max(inRect(vUv,r2),inRect(vUv,r3)));' +
-      /* the calculator is its own room and is subtracted outright, with a hard
-         edge so nothing bleeds across its threshold */
-      'float ex=inRect(vUv,rEx);' +
-      'm*=(1.0-smoothstep(0.0,0.25,ex));' +
       'float lum=max(c.r,max(c.g,c.b));' +
       'float a=clamp(lum*1.35,0.0,1.0)*m*0.82;' +
       'gl_FragColor=vec4(c*1.05,a);}');
 
-    if (!pClear || !pSplat || !pAdvect || !pDiv || !pCurl || !pVort || !pPress || !pGrad || !pDraw) {
+    /* keeps the flow inside its section: reflects the outward velocity
+       component near each rect's edge, and lets anything that ends up
+       outside every rect decay instead of drifting back in later */
+    var pWall = prog(H + 'uniform sampler2D uVel;uniform vec4 r0;uniform vec4 r1;uniform vec4 r2;uniform vec4 r3;uniform float band;' +
+      'float touch(vec2 p, vec4 r){vec2 a=step(r.xy-band,p);vec2 b=step(p,r.zw+band);return a.x*a.y*b.x*b.y;}' +
+      'vec2 wall(vec2 v, vec2 p, vec4 r){' +
+        'if(touch(p,r)<0.5) return v;' +
+        'float dl=p.x-r.x,dr=r.z-p.x,db=p.y-r.y,dt=r.w-p.y;' +
+        'float mn=min(min(dl,dr),min(db,dt));' +
+        'vec2 n=vec2(0.0);' +
+        'if(mn==dl) n=vec2(-1.0,0.0); else if(mn==dr) n=vec2(1.0,0.0); else if(mn==db) n=vec2(0.0,-1.0); else n=vec2(0.0,1.0);' +
+        'float outv=dot(v,n); float k=1.0-smoothstep(-band*0.4,band,mn);' +
+        'if(outv>0.0) v-=n*outv*k*1.7;' +
+        'return v*mix(1.0,0.8,k);' +
+      '}' +
+      'void main(){' +
+        'vec2 v=texture2D(uVel,vUv).xy;' +
+        'v=wall(v,vUv,r0); v=wall(v,vUv,r1); v=wall(v,vUv,r2); v=wall(v,vUv,r3);' +
+        'float m=max(max(touch(vUv,r0),touch(vUv,r1)),max(touch(vUv,r2),touch(vUv,r3)));' +
+        'gl_FragColor=vec4(v*mix(0.75,1.0,m),0.0,1.0);' +
+      '}');
+
+    if (!pClear || !pSplat || !pAdvect || !pDiv || !pCurl || !pVort || !pPress || !pGrad || !pDraw || !pWall) {
       cv.style.display = 'none'; return;
     }
 
@@ -1376,7 +1451,7 @@
                swap: function () { var t = a; a = b; b = t; } };
     }
 
-    var SIM = 160, DYE = 640;
+    var SIM = 192, DYE = 640;   // velocity grid fine enough that direction actually reads
     var simW, simH, dyeW, dyeH, vel, dye, div, curl, press;
 
     function initFBOs() {
@@ -1401,7 +1476,9 @@
 
     /* ---------- input ---------- */
     /* Queue every move and subdivide long jumps into several splats, so a fast
-       flick lays a continuous stroke of force instead of two isolated dots. */
+       flick lays a continuous stroke of force instead of two isolated dots.
+       Force is high enough that the flow visibly answers to the cursor
+       instead of just simmering on its own vorticity. */
     var queue = [], lag = [[0, 0]], px = 0, py = 0, hasP = false;
     addEventListener('pointermove', function (e) {
       var nx = e.clientX / cv.clientWidth, ny = 1 - e.clientY / cv.clientHeight;
@@ -1412,7 +1489,7 @@
       var steps = Math.min(8, Math.max(1, Math.ceil(travel / 0.012)));
       for (var i = 1; i <= steps; i++) {
         var t = i / steps;
-        queue.push([px + dx * t, py + dy * t, dx / steps * 900, dy / steps * 900]);
+        queue.push([px + dx * t, py + dy * t, dx / steps * 1500, dy / steps * 1500]);
       }
       px = nx; py = ny;
       if (queue.length > 40) queue.splice(0, queue.length - 40);
@@ -1441,10 +1518,11 @@
       blit(dye.write); dye.swap();
     }
 
-    /* ---------- which sections it lives in ---------- */
-    var sel = ['#services', '#work', '#clients', '#contact'];
+    /* ---------- which sections it lives in ----------
+       exactly these four — what we do, selected work, the instrument,
+       on the record — and nowhere else on the page */
+    var sel = ['#services', '#work', '#instrument', '#clients'];
     var rects = [[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2]];   // offscreen by default
-    var exRect = [2,2,2,2];
     function norm(el) {
       var r = el.getBoundingClientRect();
       // normalised, y flipped to match GL uv
@@ -1456,8 +1534,6 @@
         var el = document.querySelector(sel[i]);
         rects[i] = el ? norm(el) : [2,2,2,2];
       }
-      var ex = document.querySelector('#instrument');
-      exRect = ex ? norm(ex) : [2,2,2,2];
     }
 
     var last = 0, hidden = false;
@@ -1472,12 +1548,15 @@
 
       gl.disable(gl.BLEND);
 
-      // gold dye, so the fluid reads as molten metal rather than a rainbow
-      var n = Math.min(queue.length, 12);
+      // gold dye, so the fluid reads as molten metal rather than a rainbow.
+      // Drained in full most frames so the stroke never queues up behind
+      // where the pointer actually is; the lag buffer trails dye a half-beat
+      // behind velocity, not a whole comet tail behind the real cursor.
+      var n = Math.min(queue.length, 24);
       for (var qi = 0; qi < n; qi++) {
         var q = queue.shift();
         lag.push([q[0], q[1]]);
-        if (lag.length > 5) lag.shift();
+        if (lag.length > 2) lag.shift();
         var L = lag[0];
         splat(q[0], q[1], q[2], q[3], [0.30, 0.215, 0.085], L[0], L[1]);
       }
@@ -1521,6 +1600,16 @@
       gl.uniform1i(pGrad.u.uVel, vel.read.attach(1));
       blit(vel.write); vel.swap();
 
+      // bounce the flow off each section's edges before it advects
+      gl.useProgram(pWall.p);
+      gl.uniform1i(pWall.u.uVel, vel.read.attach(0));
+      gl.uniform4fv(pWall.u.r0, rects[0]);
+      gl.uniform4fv(pWall.u.r1, rects[1]);
+      gl.uniform4fv(pWall.u.r2, rects[2]);
+      gl.uniform4fv(pWall.u.r3, rects[3]);
+      gl.uniform1f(pWall.u.band, 0.045);
+      blit(vel.write); vel.swap();
+
       gl.useProgram(pAdvect.p);
       gl.uniform2f(pAdvect.u.px, 1 / simW, 1 / simH);
       gl.uniform2f(pAdvect.u.texel, 1 / simW, 1 / simH);
@@ -1546,7 +1635,6 @@
       gl.uniform4fv(pDraw.u.r1, rects[1]);
       gl.uniform4fv(pDraw.u.r2, rects[2]);
       gl.uniform4fv(pDraw.u.r3, rects[3]);
-      gl.uniform4fv(pDraw.u.rEx, exRect);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       blit(null);

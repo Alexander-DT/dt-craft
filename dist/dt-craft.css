@@ -856,20 +856,24 @@ input[type="range"]::-moz-range-thumb {
 }
 .wfeat:hover .wfeat-go { color: var(--gold-hi); border-color: var(--gold); }
 /* the feature dims with the rest when a grid card is hovered */
-.work-sec:hover .wfeat { opacity: .42; }
-.work-sec .wfeat:hover { opacity: 1; }
+.work-sec:hover .wfeat { --dim: .42; }
+.work-sec .wfeat:hover { --dim: 1; }
 /* hovering one card lets the rest recede, the same move as the discipline row */
-.wgrid:hover .wcard { opacity: .42; }
-.wgrid:hover .wcard:hover { opacity: 1; }
+.wgrid:hover .wcard { --dim: .42; }
+.wgrid:hover .wcard:hover { --dim: 1; }
 
 .wcard {
   position: relative; display: block; overflow: hidden;
   border: 1px solid var(--line); border-radius: 3px; background: var(--ink-1);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 24px 50px -34px rgba(0,0,0,.92);
-  transition: opacity .5s var(--ease), border-color .5s var(--ease), transform .7s var(--ease), box-shadow .7s var(--ease);
+  /* opacity and transform are recomputed every scroll frame, so neither may
+     carry a transition — the eased hover states ride --hov / --dim instead */
+  transition: border-color .5s var(--ease), box-shadow .7s var(--ease),
+              --hov .7s var(--ease), --dim .5s var(--ease);
 }
 .wcard:hover {
-  border-color: var(--gold-lo); transform: translateY(-6px);
+  --hov: 1;
+  border-color: var(--gold-lo);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.09),
               0 44px 74px -36px rgba(0,0,0,.96),
               0 0 34px -14px rgba(227,185,107,.2);
@@ -886,9 +890,13 @@ input[type="range"]::-moz-range-thumb {
     brightness(calc(44% + 42% * var(--lit)))
     contrast(calc(105% - 5% * var(--lit)))
     sepia(calc(16% * (1 - var(--lit))));
-  transition: transform 1.2s var(--ease), filter .55s var(--ease);
+  /* the scroll-zoom, held back so it lands as its own beat rather than riding
+     the card in: nothing happens until the card is a third of the way through
+     its arrival, and only then does the image ease out to its true size */
+  --kz: clamp(0, (var(--ka, 1) - .34) * 1.62, 1);
+  transform: scale(calc(1.08 - .08 * var(--kz) + .05 * var(--hov, 0)));
+  transition: filter .55s var(--ease);
 }
-.wcard:hover .wshot img { transform: scale(1.05); }
 /* the frame warms with the same value */
 .wcard { border-color: color-mix(in srgb, var(--gold-lo) calc(var(--lit) * 100%), var(--line)); }
 .wveil { opacity: calc(1 - 0.22 * var(--lit)); transition: opacity .55s var(--ease); }
@@ -923,6 +931,7 @@ input[type="range"]::-moz-range-thumb {
 @media (prefers-reduced-motion: reduce) {
   .work-sec::before { animation: none; }
   .wcard, .wcard:hover { transform: none; }
+  .wshot img { transform: none; }
 }
 
 /* ---------- testimonials: draggable rail, cards with a reveal ---------- */
@@ -961,11 +970,12 @@ input[type="range"]::-moz-range-thumb {
   background: linear-gradient(168deg, rgba(31,35,48,.66), rgba(18,21,29,.8));
   backdrop-filter: blur(12px) saturate(125%); -webkit-backdrop-filter: blur(12px) saturate(125%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.055), 0 24px 50px -34px rgba(0,0,0,.92);
-  transition: border-color .55s var(--ease), transform .7s var(--ease), box-shadow .7s var(--ease);
+  transition: border-color .55s var(--ease), box-shadow .7s var(--ease), --hov .7s var(--ease);
 }
 .quote > *:not(.q-reveal) { position: relative; z-index: 2; }
 .quote:hover {
-  border-color: var(--gold-lo); transform: translateY(-7px);
+  --hov: 1;
+  border-color: var(--gold-lo);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.09),
               0 44px 74px -36px rgba(0,0,0,.96),
               0 0 34px -14px rgba(227,185,107,.2);
@@ -1230,9 +1240,60 @@ input[type="range"]::-moz-range-thumb {
   transform: translateY(calc((1 - var(--kb)) * 16px));
 }
 
+/* ============================================================
+   CARD ARRIVAL — cards tilt in from a shallow angle and settle
+   flat as their band passes, so a section reads as a block that
+   arrives rather than one more stretch of a continuous page.
+   Each card offsets by --th, which is stamped from its index.
+
+   Both are registered so the hover states can ease while opacity
+   and transform stay untransitioned — they are rewritten every
+   scroll frame, and a transition on either would drag behind the
+   scrub. Without @property support the hover lift lands instantly
+   and the scroll arrival is unaffected.
+   ============================================================ */
+@property --hov { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --dim { syntax: "<number>"; inherits: false; initial-value: 1; }
+
+.wcard, .quote {
+  --hov: 0;
+  --ka: clamp(0, (var(--k, 1) - var(--th, 0)) * 1.7, 1);
+  transform-origin: 50% 0%;
+  will-change: transform, opacity;
+}
+.wcard {
+  --dim: 1;
+  opacity: calc(var(--ka) * var(--dim));
+  transform:
+    perspective(900px)
+    translateY(calc((1 - var(--ka)) * 84px - var(--hov) * 6px))
+    rotateX(calc((1 - var(--ka)) * 17deg))
+    scale(calc(.93 + .07 * var(--ka)));
+}
+/* the rail clips vertically, so the quotes travel less than the work cards.
+   The tilt itself is free here: rotating about the top edge shortens the card
+   on screen rather than pushing it past the rail's bottom padding. */
+.quote {
+  opacity: var(--ka);
+  transform:
+    perspective(900px)
+    translateY(calc((1 - var(--ka)) * 22px - var(--hov) * 7px))
+    rotateX(calc((1 - var(--ka)) * 13deg))
+    scale(calc(.955 + .045 * var(--ka)));
+}
+/* the discipline row arrives whole: its cards already own their transform
+   for the expand-on-select, so the lift belongs on the row around them */
+.drow {
+  --ka: clamp(0, var(--k, 1) * 1.35, 1);
+  opacity: var(--ka);
+  transform: translateY(calc((1 - var(--ka)) * 60px));
+  will-change: transform, opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-band] { --k: 1 !important; }
   .e-grid .sc, .e-punch .sp, .e-rise .sp, .stage-2, .stage-3 { opacity: 1 !important; transform: none !important; }
+  .wcard, .quote, .drow { opacity: 1 !important; transform: none !important; }
   .e-soft .soft { display: none; }
   .e-soft .sharp { opacity: 1 !important; }
 }
