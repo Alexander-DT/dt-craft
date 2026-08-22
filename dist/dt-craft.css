@@ -1259,10 +1259,14 @@ input[type="range"]::-moz-range-thumb {
   --hov: 0;
   --ka: clamp(0, (var(--k, 1) - var(--th, 0)) * 1.7, 1);
   transform-origin: 50% 0%;
-  will-change: transform, opacity;
 }
+/* will-change lives only here. It creates a backdrop root, and .quote and
+   .dcard are lit by backdrop-filter: promoting them cuts the filter off from
+   the atmosphere behind the page, and the glass flattens into a dark panel.
+   .wcard has no backdrop-filter under it, so it is safe to promote. */
 .wcard {
   --dim: 1;
+  will-change: transform, opacity;
   opacity: calc(var(--ka) * var(--dim));
   transform:
     perspective(900px)
@@ -1287,7 +1291,6 @@ input[type="range"]::-moz-range-thumb {
   --ka: clamp(0, var(--k, 1) * 1.35, 1);
   opacity: var(--ka);
   transform: translateY(calc((1 - var(--ka)) * 60px));
-  will-change: transform, opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {
