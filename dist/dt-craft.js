@@ -7,6 +7,162 @@
   var touch  = matchMedia('(hover: none)').matches;
 
   /* =========================================================
+     0. THEME — data-theme + data-accent on <html>
+
+     The stylesheet does all the repainting; this only sets the two
+     attributes, remembers the choice, and tells the canvas and WebGL
+     modules to re-read their colours (they cannot see CSS on their own).
+
+     A tiny blocking snippet in <head> sets the attributes before first
+     paint — see the README. If it is missing the page still works, it
+     just flashes the default theme for one frame.
+     ========================================================= */
+  var THEME = (function () {
+    var root = document.documentElement;
+    var ACCENTS = ['gold', 'amber', 'azure', 'verdant', 'crimson', 'violet'];
+    var subs = [];
+
+    function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    function load(k)    { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+    function theme()  { return root.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+    function accent() {
+      var a = root.getAttribute('data-accent');
+      return ACCENTS.indexOf(a) > -1 ? a : 'gold';
+    }
+
+    /* Reads a custom property off any element and returns it as an array of
+       floats. Used for the shader ramps, which are declared in CSS so the
+       whole palette lives in one file. */
+    function nums(el, name, fallback) {
+      var raw = getComputedStyle(el || root).getPropertyValue(name).trim();
+      if (!raw) return fallback;
+      var out = raw.split(',').map(function (n) { return parseFloat(n); });
+      for (var i = 0; i < out.length; i++) if (isNaN(out[i])) return fallback;
+      return out;
+    }
+    function num(el, name, fallback) {
+      var v = parseFloat(getComputedStyle(el || root).getPropertyValue(name));
+      return isNaN(v) ? fallback : v;
+    }
+    /* the raw "r,g,b" triplet, kept as a string for rgba() concatenation */
+    function tint(el, name, fallback) {
+      var raw = getComputedStyle(el || root).getPropertyValue(name).trim();
+      return /^\d[\d.,\s]*$/.test(raw) ? raw.replace(/\s+/g, '') : fallback;
+    }
+
+    function emit() {
+      var d = { theme: theme(), accent: accent() };
+      for (var i = 0; i < subs.length; i++) { try { subs[i](d); } catch (e) {} }
+      try { dispatchEvent(new CustomEvent('dt:theme', { detail: d })); } catch (e) {}
+    }
+
+    /* Setting the attribute is the whole repaint: the stylesheet carries the
+       easing on the surfaces that need it, so there is nothing to time here. */
+    function setTheme(v, quiet) {
+      v = v === 'light' ? 'light' : 'dark';
+      if (v === theme() && root.hasAttribute('data-theme')) return;
+      root.setAttribute('data-theme', v);
+      if (!quiet) save('dt-theme', v);
+      sync(); emit();
+    }
+    function setAccent(v, quiet) {
+      if (ACCENTS.indexOf(v) < 0) v = 'gold';
+      if (v === accent() && root.hasAttribute('data-accent')) return;
+      root.setAttribute('data-accent', v);
+      if (!quiet) save('dt-accent', v);
+      sync(); emit();
+    }
+
+    /* ---------- the controls ---------- */
+    function sync() {
+      var t = theme(), a = accent();
+      var sw = document.getElementById('themeSw');
+      if (sw) {
+        sw.setAttribute('aria-checked', t === 'light' ? 'true' : 'false');
+        sw.setAttribute('aria-label', t === 'light'
+          ? 'Switch to dark theme' : 'Switch to light theme');
+      }
+      /* a radio group is one tab stop, not six: the arrows move within it,
+         so only the selected swatch stays tabbable */
+      var swatches = document.querySelectorAll('.acc-sw');
+      for (var i = 0; i < swatches.length; i++) {
+        var on = swatches[i].getAttribute('data-accent') === a;
+        swatches[i].setAttribute('aria-checked', on ? 'true' : 'false');
+        swatches[i].tabIndex = on ? 0 : -1;
+      }
+    }
+
+    function wire() {
+      // restore, or take the system preference on a first visit
+      var t = load('dt-theme');
+      if (t !== 'light' && t !== 'dark') {
+        t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      setTheme(t, true);
+      setAccent(load('dt-accent') || 'gold', true);
+
+      var sw = document.getElementById('themeSw');
+      if (sw) sw.addEventListener('click', function () {
+        setTheme(theme() === 'light' ? 'dark' : 'light');
+      });
+
+      var btn = document.getElementById('accBtn');
+      var pop = document.getElementById('accPop');
+      if (btn && pop) {
+        var open = function (on) {
+          pop.classList.toggle('on', on);
+          btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+        };
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          open(!pop.classList.contains('on'));
+        });
+        pop.addEventListener('click', function (e) { e.stopPropagation(); });
+        document.addEventListener('click', function () { open(false); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && pop.classList.contains('on')) { open(false); btn.focus(); }
+        });
+
+        var sws = [].slice.call(pop.querySelectorAll('.acc-sw'));
+        sws.forEach(function (s, i) {
+          s.addEventListener('click', function () { setAccent(s.getAttribute('data-accent')); });
+          // a radio group: arrows move between swatches rather than tab stops
+          s.addEventListener('keydown', function (e) {
+            var d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1
+                  : e.key === 'ArrowLeft'  || e.key === 'ArrowUp'   ? -1 : 0;
+            if (!d) return;
+            e.preventDefault();
+            var n = sws[(i + d + sws.length) % sws.length];
+            n.focus(); setAccent(n.getAttribute('data-accent'));
+          });
+        });
+      }
+
+      // follow the OS only while the reader has not made a choice of their own
+      var mq = matchMedia('(prefers-color-scheme: light)');
+      var onMQ = function (e) { if (!load('dt-theme')) setTheme(e.matches ? 'light' : 'dark'); };
+      if (mq.addEventListener) mq.addEventListener('change', onMQ);
+      else if (mq.addListener) mq.addListener(onMQ);
+
+      sync();
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
+    else wire();
+
+    return {
+      get theme() { return theme(); },
+      get accent() { return accent(); },
+      setTheme: setTheme,
+      setAccent: setAccent,
+      nums: nums, num: num, tint: tint,
+      /* run fn now and again on every change — how the canvases stay in step */
+      on: function (fn) { subs.push(fn); fn({ theme: theme(), accent: accent() }); }
+    };
+  })();
+
+  /* =========================================================
      1. HERO SHADER — molten treasury field, cursor-reactive
      ========================================================= */
   (function shader() {
@@ -23,6 +179,9 @@
     var FS = [
       'precision highp float;',
       'uniform vec2 uRes; uniform float uTime; uniform vec2 uMouse; uniform float uStr;',
+      /* the palette is not baked in — it arrives from the CSS token layer,
+         so a theme or accent swap repaints the metal with the page */
+      'uniform vec3 uInk; uniform vec3 uC1; uniform vec3 uC2; uniform vec3 uC3; uniform float uVig;',
       'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}',
       'float noise(vec2 p){',
       '  vec2 i=floor(p),f=fract(p); vec2 u=f*f*(3.0-2.0*f);',
@@ -42,20 +201,16 @@
       '  vec2 r=vec2(fbm(sp+3.4*q+vec2(1.7,9.2)+t*1.3),fbm(sp+3.4*q+vec2(8.3,2.8)-t*1.1));',
       '  float f=fbm(sp+3.2*r);',
       '  f=clamp(f,0.,1.);',
-      '  vec3 ink   =vec3(0.031,0.035,0.051);',
-      '  vec3 bronze=vec3(0.216,0.145,0.055);',
-      '  vec3 gold  =vec3(0.780,0.596,0.286);',
-      '  vec3 hot   =vec3(1.000,0.949,0.812);',
-      '  vec3 col=mix(ink,bronze,smoothstep(0.24,0.56,f));',
-      '  col=mix(col,gold,smoothstep(0.52,0.79,f));',
-      '  col=mix(col,hot,smoothstep(0.80,0.97,f));',
+      '  vec3 col=mix(uInk,uC1,smoothstep(0.24,0.56,f));',
+      '  col=mix(col,uC2,smoothstep(0.52,0.79,f));',
+      '  col=mix(col,uC3,smoothstep(0.80,0.97,f));',
       /* thin specular veins — the engraved highlight */
       '  float vein=pow(max(0.,length(r)-0.34),2.2)*1.5;',
-      '  col+=gold*vein*0.45;',
+      '  col=mix(col,uC2,clamp(vein*0.45,0.,1.));',
       /* the cursor warms the metal where it passes */
-      '  col+=vec3(0.62,0.46,0.20)*g*0.30;',
+      '  col=mix(col,uC3,clamp(g*0.42,0.,1.));',
       '  float vig=1.0-smoothstep(0.42,1.28,length(uv));',
-      '  col*=mix(0.30,1.0,vig);',
+      '  col*=mix(uVig,1.0,vig);',
       '  gl_FragColor=vec4(col,1.0);',
       '}'
     ].join('\n');
@@ -82,7 +237,25 @@
     var uRes = gl.getUniformLocation(pr, 'uRes'),
         uTime = gl.getUniformLocation(pr, 'uTime'),
         uMouse = gl.getUniformLocation(pr, 'uMouse'),
-        uStr = gl.getUniformLocation(pr, 'uStr');
+        uStr = gl.getUniformLocation(pr, 'uStr'),
+        uInk = gl.getUniformLocation(pr, 'uInk'),
+        uC1 = gl.getUniformLocation(pr, 'uC1'),
+        uC2 = gl.getUniformLocation(pr, 'uC2'),
+        uC3 = gl.getUniformLocation(pr, 'uC3'),
+        uVig = gl.getUniformLocation(pr, 'uVig');
+
+    THEME.on(function () {
+      gl.useProgram(pr);
+      var ink = THEME.nums(null, '--sh-ink', [0.031, 0.035, 0.051]);
+      var c1  = THEME.nums(null, '--sh-1',   [0.216, 0.145, 0.055]);
+      var c2  = THEME.nums(null, '--sh-2',   [0.780, 0.596, 0.286]);
+      var c3  = THEME.nums(null, '--sh-3',   [1.000, 0.949, 0.812]);
+      gl.uniform3f(uInk, ink[0], ink[1], ink[2]);
+      gl.uniform3f(uC1, c1[0], c1[1], c1[2]);
+      gl.uniform3f(uC2, c2[0], c2[1], c2[2]);
+      gl.uniform3f(uC3, c3[0], c3[1], c3[2]);
+      gl.uniform1f(uVig, THEME.num(null, '--sh-vig', 0.30));
+    });
 
     var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
     function size() {
@@ -140,6 +313,7 @@
     var FS = [
       'precision mediump float;',
       'uniform vec2 uRes; uniform float uTime;',
+      'uniform vec3 uInk; uniform vec3 uC1; uniform vec3 uC2;',
       'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}',
       'float noise(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.0-2.0*f);',
       ' return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);}',
@@ -153,11 +327,8 @@
       '  vec2 q=vec2(fbm(duv*1.1+t),fbm(duv*1.1+vec2(4.3,1.7)-t*0.7));',
       '  float f=fbm(duv*1.1+2.4*q);',
       '  f=clamp(f,0.,1.);',
-      '  vec3 ink   =vec3(0.031,0.035,0.051);',
-      '  vec3 bronze=vec3(0.115,0.082,0.036);',
-      '  vec3 warm  =vec3(0.230,0.170,0.072);',
-      '  vec3 col=mix(ink,bronze,smoothstep(0.30,0.68,f));',
-      '  col=mix(col,warm,smoothstep(0.70,0.96,f)*0.65);',
+      '  vec3 col=mix(uInk,uC1,smoothstep(0.30,0.68,f));',
+      '  col=mix(col,uC2,smoothstep(0.70,0.96,f)*0.65);',
       '  gl_FragColor=vec4(col,1.0);',
       '}'
     ].join('\n');
@@ -180,7 +351,20 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     var uRes = gl.getUniformLocation(pr, 'uRes'),
-        uTime = gl.getUniformLocation(pr, 'uTime');
+        uTime = gl.getUniformLocation(pr, 'uTime'),
+        uInk = gl.getUniformLocation(pr, 'uInk'),
+        uC1 = gl.getUniformLocation(pr, 'uC1'),
+        uC2 = gl.getUniformLocation(pr, 'uC2');
+
+    THEME.on(function () {
+      gl.useProgram(pr);
+      var ink = THEME.nums(null, '--atmo-ink', [0.031, 0.035, 0.051]);
+      var c1  = THEME.nums(null, '--atmo-1',   [0.115, 0.082, 0.036]);
+      var c2  = THEME.nums(null, '--atmo-2',   [0.230, 0.170, 0.072]);
+      gl.uniform3f(uInk, ink[0], ink[1], ink[2]);
+      gl.uniform3f(uC1, c1[0], c1[1], c1[2]);
+      gl.uniform3f(uC2, c2[0], c2[1], c2[2]);
+    });
 
     var dpr = Math.min(window.devicePixelRatio || 1, 1);
     function size() {
@@ -926,7 +1110,7 @@
         if (e.clientX < r.left - 80 || e.clientX > r.right + 80) return;
         sh.style.backgroundImage = 'radial-gradient(460px 340px at ' +
           (e.clientX - r.left).toFixed(0) + 'px ' + (e.clientY - r.top).toFixed(0) +
-          'px, rgba(255,239,203,.09), transparent 68%)';
+          'px, rgba(' + THEME.tint(null, '--acc-hi-rgb', '255,239,203') + ',.09), transparent 68%)';
       }, { passive: true });
     }
 
@@ -954,6 +1138,14 @@
     var SPACING = 30, SIZE = 2.6, RADIUS = 130, HOVER_SCALE = 1.9, ORBIT = 1.4;
 
     var dots = [], W = 0, H = 0, mx = -9999, my = -9999, hovering = false, leaveTs = 0, prev = 0, angle = 0, raf = 0, vis = false;
+
+    /* the dots take their colour from the section they sit in, so the tint
+       follows both the theme and the accent without any of it being hardcoded */
+    var TINT = '227,185,107', BASE_A = 0.22;
+    THEME.on(function () {
+      TINT = THEME.tint(cv.parentNode, '--fx-rgb', '227,185,107');
+      BASE_A = THEME.num(cv.parentNode, '--dot-a', 0.22);
+    });
 
     function smoothstep(t) { var c = Math.max(0, Math.min(1, t)); return c * c * (3 - 2 * c); }
 
@@ -1001,7 +1193,7 @@
         var d = dots[i];
         var dx = d.bx - mx, dy = d.by - my;
         var dist = Math.sqrt(dx * dx + dy * dy);
-        var x = d.bx, y = d.by, scale = 1, alpha = .22;
+        var x = d.bx, y = d.by, scale = 1, alpha = BASE_A;
 
         if (dist < RADIUS && dist > 0 && decay > 0) {
           var t = dist / RADIUS;
@@ -1014,11 +1206,11 @@
           y = d.by + (lx * sinA + ly * cosA) * orbitR;
           var depth = .75 + .25 * ((lz + 1) * .5);
           scale = (1 + (HOVER_SCALE - 1) * inf) * depth;
-          alpha = (.22 + .74 * inf) * depth;
+          alpha = (BASE_A + .74 * inf) * depth;
         }
         ctx.beginPath();
         ctx.arc(x, y, SIZE / 2 * scale, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(227,185,107,' + alpha.toFixed(3) + ')';
+        ctx.fillStyle = 'rgba(' + TINT + ',' + alpha.toFixed(3) + ')';
         ctx.fill();
       }
     }
@@ -1038,16 +1230,26 @@
     var CHARS = ['\u00b7', '.', '-', '~', '=', '+', 'x', '*', 'o'];
     var LAST = CHARS.length - 1;
     var FONT = opts.font || 13, DAMP = opts.damping || .925, SPEED = .48;
-    var MAXA = opts.maxAlpha || .3, STEPS = 14;
-    var TINT = opts.tint || '227,185,107';
+    var STEPS = 14;
     var CSP = FONT * .85, RSP = FONT * 1.15;
 
+    /* Both the tint and the ceiling alpha are read off the host element, not
+       the document: the footer stays dark in light mode and so keeps the
+       bright accent, while the mega menu flips with the page. */
     var pal = [];
-    /* index 0 must not be fully transparent: most cells in a settled wave land
-       there, and at alpha 0 the whole effect renders invisibly. Floor it. */
-    for (var i = 0; i <= STEPS; i++) {
-      pal.push('rgba(' + TINT + ',' + ((0.22 + 0.78 * (i / STEPS)) * MAXA).toFixed(3) + ')');
+    function palette() {
+      var MAXA = THEME.num(host, opts.alphaVar || '--ripple-a', opts.maxAlpha || .3);
+      var TINT = opts.tint || THEME.tint(host, '--fx-rgb', '227,185,107');
+      pal.length = 0;
+      /* index 0 must not be fully transparent: most cells in a settled wave land
+         there, and at alpha 0 the whole effect renders invisibly. Floor it. */
+      for (var i = 0; i <= STEPS; i++) {
+        pal.push('rgba(' + TINT + ',' + ((0.22 + 0.78 * (i / STEPS)) * MAXA).toFixed(3) + ')');
+      }
     }
+    /* a settled surface has stopped drawing, so a repaint has to nudge it
+       back awake — otherwise the old tint stays on screen until it is touched */
+    THEME.on(function () { palette(); if (b1) wake(); });
 
     var W = 0, H = 0, cols = 0, rows = 0, b1, b2, raf = 0, sleeping = false, idle = 0;
     var mouse = { x: -1, y: -1, px: -1, py: -1 };
@@ -1142,7 +1344,7 @@
 
   asciiRipple(document.getElementById('megaFx'), document.getElementById('mega'), {});
   asciiRipple(document.getElementById('footFx'), document.querySelector('.site-foot'),
-              { font: 14, maxAlpha: .38, ambient: true });
+              { font: 14, maxAlpha: .38, alphaVar: '--foot-ripple-a', ambient: true });
 
   /* =========================================================
      WORK SEQUENCER — each card regains its colour in turn as the
@@ -1371,12 +1573,15 @@
       'vec2 v=texture2D(uVel,vUv).xy-vec2(R-L,T-B);gl_FragColor=vec4(v,0.,1.);}');
     /* the composite is where the section gating happens */
     var pDraw    = prog(H + 'uniform sampler2D uT;uniform vec4 r0;uniform vec4 r1;uniform vec4 r2;uniform vec4 r3;' +
+      'uniform vec3 tint;uniform float mode;uniform float gain;' +
       'float inRect(vec2 p, vec4 r){vec2 a=smoothstep(r.xy,r.xy+0.03,p);vec2 b=smoothstep(r.zw,r.zw-0.03,p);return a.x*a.y*b.x*b.y;}' +
       'void main(){vec3 c=texture2D(uT,vUv).rgb;' +
       'float m=max(max(inRect(vUv,r0),inRect(vUv,r1)),max(inRect(vUv,r2),inRect(vUv,r3)));' +
       'float lum=max(c.r,max(c.g,c.b));' +
-      'float a=clamp(lum*1.35,0.0,1.0)*m*0.82;' +
-      'gl_FragColor=vec4(c*1.05,a);}');
+      'float a=clamp(lum*gain,0.0,1.0)*m*0.82;' +
+      /* screened onto a dark ground the dye IS the colour; multiplied onto
+         paper it has to be a flat tint, or the near-black dye prints a bruise */
+      'gl_FragColor=vec4(mix(c*1.05,tint,mode),a);}');
 
     /* keeps the flow inside its section: reflects the outward velocity
        component near each rect's edge, and lets anything that ends up
@@ -1441,6 +1646,15 @@
     }
 
     var SIM = 192, DYE = 640;   // velocity grid fine enough that direction actually reads
+
+    /* the dye hue, and how the composite lands, both come from the tokens */
+    var DYE_COL = [0.30, 0.215, 0.085], TINT = [0.78, 0.64, 0.40], MODE = 0, GAIN = 1.35;
+    THEME.on(function () {
+      DYE_COL = THEME.nums(null, '--fluid-dye',  [0.30, 0.215, 0.085]);
+      TINT    = THEME.nums(null, '--fluid-tint', [0.78, 0.64, 0.40]);
+      MODE    = THEME.num(null,  '--fluid-mode', 0);
+      GAIN    = THEME.num(null,  '--fluid-gain', 1.35);
+    });
     var simW, simH, dyeW, dyeH, vel, dye, div, curl, press;
 
     function initFBOs() {
@@ -1547,7 +1761,7 @@
         lag.push([q[0], q[1]]);
         if (lag.length > 2) lag.shift();
         var L = lag[0];
-        splat(q[0], q[1], q[2], q[3], [0.30, 0.215, 0.085], L[0], L[1]);
+        splat(q[0], q[1], q[2], q[3], DYE_COL, L[0], L[1]);
       }
 
       gl.viewport(0, 0, simW, simH);
@@ -1619,6 +1833,9 @@
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(pDraw.p);
+      gl.uniform3f(pDraw.u.tint, TINT[0], TINT[1], TINT[2]);
+      gl.uniform1f(pDraw.u.mode, MODE);
+      gl.uniform1f(pDraw.u.gain, GAIN);
       gl.uniform1i(pDraw.u.uT, dye.read.attach(0));
       gl.uniform4fv(pDraw.u.r0, rects[0]);
       gl.uniform4fv(pDraw.u.r1, rects[1]);
@@ -2006,5 +2223,8 @@ Cal('init', 'discovery', { origin: 'https://app.cal.com' });
 Cal.ns.discovery('ui', {
   hideEventTypeDetails: false,
   layout: 'month_view',
-  cssVarsPerTheme: { dark: { 'cal-brand': '#E3B96B' }, light: { 'cal-brand': '#8C6A2A' } }
+  cssVarsPerTheme: {
+    dark:  { 'cal-brand': getComputedStyle(document.documentElement).getPropertyValue('--a-3').trim() || '#E3B96B' },
+    light: { 'cal-brand': getComputedStyle(document.documentElement).getPropertyValue('--a-2').trim() || '#8C6A2A' }
+  }
 });

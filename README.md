@@ -18,8 +18,17 @@ from `assets.itsoffbrand.io`, not from Webflow).
 dist/dt-craft.css              all styling, tokens included
 dist/dt-craft.js               every system — expects the markup below
 dist/dt-craft.standalone.js    the same, plus the markup, self-injecting
-index.html                     the full demo page
-markup.reference.html          the DOM dt-craft.js expects
+index.html                     the full demo page — the source of markup truth
+markup.reference.html          the DOM dt-craft.js expects        (generated)
+build.js                       regenerates the two generated files
+```
+
+`index.html` and `dist/dt-craft.js` are edited by hand. `markup.reference.html`
+and `dist/dt-craft.standalone.js` are derived from them — after changing either,
+run:
+
+```
+node build.js
 ```
 
 **Which JS file?**
@@ -44,7 +53,21 @@ place while you rebuild sections natively one at a time.
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.4.1/dist/dt-craft.css">
+
+<!-- Theme, set before first paint. Must be inline and blocking: a reader who
+     chose light otherwise gets a frame of dark on every navigation. -->
+<script>
+(function(){try{
+  var r=document.documentElement,t=localStorage.getItem('dt-theme'),a=localStorage.getItem('dt-accent');
+  if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  r.setAttribute('data-theme',t);
+  r.setAttribute('data-accent',/^(gold|amber|azure|verdant|crimson|violet)$/.test(a)?a:'gold');
+}catch(e){}})();
+</script>
 ```
+
+> Webflow caps a *registered* inline script at 2,000 characters; this one is
+> well under, so it pastes into Head custom code as-is.
 
 **Project Settings → Custom Code → Before `</body>`:**
 
@@ -58,6 +81,71 @@ place while you rebuild sections natively one at a time.
 
 > Pin the version tag. Never point at `@main` — a commit would silently change
 > the live site.
+
+---
+
+## Theme and accent
+
+Two independent axes, both attributes on `<html>`:
+
+| Attribute | Values | Default |
+|---|---|---|
+| `data-theme` | `dark`, `light` | the OS preference, then `dark` |
+| `data-accent` | `gold`, `amber`, `azure`, `verdant`, `crimson`, `violet` | `gold` |
+
+Both are driven by the controls in the nav (`#themeSw`, `#accBtn`), remembered
+in `localStorage` under `dt-theme` / `dt-accent`, and applied before first
+paint by the head snippet above. Until a reader picks a theme the page follows
+the OS and keeps following it; once they choose, their choice wins for good.
+
+### How it works
+
+Everything resolves through tokens, so neither axis needs a single rule of its
+own downstream. The accent is a five-stop ramp — `--a-1` deepest through `--a-5`
+lightest — which each theme maps onto the three names the page uses:
+
+|  | `--gold-lo` | `--gold` | `--gold-hi` |
+|---|---|---|---|
+| dark | `--a-2` | `--a-3` | `--a-5` |
+| light | `--a-3` | `--a-2` | `--a-1` |
+
+Dark climbs the ramp for emphasis; light descends it, because on paper
+*brighter* means deeper, not paler.
+
+Adding a seventh accent means adding one `[data-accent="…"]` block next to the
+others in `dt-craft.css` and one `.acc-sw` button — nothing else.
+
+### Two things deliberately do not flip
+
+- **Type over photography.** `.wcard` / `.wfeat` copy sits on a dark veil in
+  both themes, so it uses `--on-media` and `--on-acc`, which stay at the light
+  end regardless.
+- **The footer.** A wordmark cut out of a fade needs a dark ground to be cut
+  out *of*, so in light mode the footer stays deep slate and re-declares the
+  on-dark tokens locally — an inverted island, the way a masthead sits at the
+  foot of a printed page whatever the stock.
+
+### The canvases
+
+Canvas and WebGL cannot read CSS, so the four surfaces subscribe to
+`THEME.on(...)` and re-read their palette from custom properties on every
+change: the hero and atmosphere shaders take their ramps as uniforms
+(`--sh-*`, `--atmo-*`), the dot grid and ASCII ripples take a tint (`--fx-rgb`)
+from **their own host element** — which is how the footer keeps the bright
+accent while the mega menu flips — and the fluid takes dye, tint and blend
+mode (`--fluid-*`). A `dt:theme` event fires on `window` alongside, if anything
+else ever needs to listen.
+
+The fluid also switches blend mode: it screens onto the dark ground and
+multiplies onto paper, since a screen blend over ivory is invisible.
+
+### Cost
+
+The swap is attribute-only. The large surfaces that had no reason to
+transition before carry a 0.42s colour transition; everything else already
+crossfades through its own hover transitions. There is deliberately no
+blanket `* { transition: … }` — that starts a transition on ~1,300 nodes at
+once, which is exactly the kind of thing the rest of this build avoids.
 
 ---
 
@@ -79,6 +167,7 @@ classes; `markup.reference.html` is the authoritative copy.
 | `vp`, `scroller`, `spacer` | the smooth-scroll rig |
 | `nav`, `mega`, `svcTrigger`, `megaInd`, `scrim` | nav and mega menu |
 | `pal`, `palInput`, `palList`, `palEmpty`, `palScrim`, `kbdChip`, `kbdLabel` | command palette |
+| `themeSw`, `accBtn`, `accPop` + `.acc-sw[data-accent]` | theme switch and accent tray |
 | `drow` | the discipline row |
 | `qtrack`, `qprev`, `qnext`, `qprogbar` | testimonial rail |
 | `d1`–`d5`, `v1`–`v5`, `o1`–`o6`, `stamp` | ROI calculator dials and readouts |
@@ -108,7 +197,8 @@ arrival choreography attaches itself.
 
 - **Nothing runs on touch or under `prefers-reduced-motion`.** Smooth scroll,
   custom cursor, magnetic buttons, fluid, image trail and ripples all bail out;
-  layering and shadows stay.
+  layering and shadows stay. The theme and accent controls keep working — they
+  are not motion.
 - **The fluid is masked to four sections** — `#services`, `#work`,
   `#instrument`, `#clients` — and nowhere else. Inside those sections it
   bounces off the section's own edges (left, right, top, bottom) instead of
