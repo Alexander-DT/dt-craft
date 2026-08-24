@@ -17,6 +17,12 @@
 const fs = require('fs');
 const path = require('path');
 
+/* The tag the generated bundles point their images at. A Webflow page
+   cannot resolve ./img/, so the build rewrites those to the CDN --
+   which means BUMPING THIS IS PART OF CUTTING A RELEASE. */
+const VERSION = 'v1.9.0';
+const CDN = `https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@${VERSION}`;
+
 const ROOT = __dirname;
 const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
 
@@ -133,7 +139,9 @@ const labSizes = LAB.map(slug => {
 
   pageBody = pageBody
     .replace(/href="index\.html(#[^"]*)?"/g, (_, hash) => `href="/${hash || ''}"`)
-    .replace(new RegExp(`href="(${LAB.join('|')})\\.html"`, 'g'), 'href="/$1"');
+    .replace(new RegExp(`href="(${LAB.join('|')})\\.html"`, 'g'), 'href="/$1"')
+    /* ./img/ resolves on disk and on the demo; a Webflow page needs the CDN */
+    .replace(/(["'(])\.\/img\//g, `$1${CDN}/img/`);
 
   const bundle =
 `/*! dt-lab ${slug} - the markup for the ${slug} lab page, plus the shared

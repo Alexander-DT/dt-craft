@@ -675,6 +675,9 @@
   if (!touch && !reduce) {
     (function cursor() {
       var c = document.getElementById('cur');
+      // a page carrying its own pointer treatment removes #cur; every other
+      // module here tolerates missing markup and this one should too
+      if (!c) return;
       var cx = 0, cy = 0, px = 0, py = 0, has = false;
       addEventListener('pointermove', function (e) {
         cx = e.clientX; cy = e.clientY;

@@ -2082,6 +2082,135 @@
 }
 .df-copy p { color: var(--paper-2); max-width: 44ch; margin: 0 auto; }
 
+
+/* ============================================================
+   32. PAGE GROUND — a whole-page background belonging to one page,
+   replacing the shared molten atmosphere rather than sitting on it.
+   Lifted out of the scroll rig at boot; see dt-lab.js.
+   ============================================================ */
+#labGround {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none; overflow: hidden;
+  background: var(--ink-0);
+  transition: background-color .42s var(--ease);
+}
+#labGround > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#labGround .lg-wash {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(90% 62% at 50% 0%, rgba(var(--acc-rgb), .09), transparent 68%),
+    radial-gradient(70% 50% at 82% 92%, rgba(var(--acc-rgb), .06), transparent 70%),
+    linear-gradient(180deg, transparent 34%, rgba(var(--ground-rgb), .42));
+}
+/* the pointer treatment: it lights the drawing rather than marking it */
+#labGround .lg-lamp {
+  position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(360px 360px at var(--lx, 50%) var(--ly, 50%),
+    rgba(var(--acc-rgb), .17), rgba(var(--acc-rgb), .05) 42%, transparent 70%);
+  transition: opacity .7s var(--ease);
+}
+#labGround.lit .lg-lamp { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #labGround .lg-lamp { display: none; } }
+
+
+/* ---------- 07. scroll rotation: the die.
+     The disc turns with the scroll and the marks around its rim counter-turn
+     by exactly the same amount, so they stay upright while the plate under
+     them rotates. That counter-rotation is the whole trick. ---------- */
+.die { position: relative; z-index: 2; display: grid; place-items: center; height: 100%; }
+.die-disc {
+  position: relative;
+  width: clamp(230px, 40vw, 470px); aspect-ratio: 1; border-radius: 50%;
+  border: 1px solid var(--gold-lo);
+  transform: rotate(calc(var(--k, 0) * 320deg));
+  background:
+    repeating-conic-gradient(from 0deg at 50% 50%,
+      rgba(var(--acc-rgb), .3) 0deg .35deg, transparent .35deg 6deg),
+    repeating-radial-gradient(circle at 50% 50%,
+      rgba(var(--acc-rgb), .1) 0 1px, transparent 1px 14px),
+    radial-gradient(circle at 42% 36%, rgba(var(--acc-rgb), .16), transparent 62%),
+    linear-gradient(154deg, rgba(var(--sf-1), .96), rgba(var(--sf-2), .99));
+  box-shadow: inset 0 1px 0 var(--edge-3), 0 40px 84px -46px var(--cast-2);
+}
+.die-disc::after {
+  content: ""; position: absolute; inset: 13%; border-radius: 50%;
+  border: 1px dashed rgba(var(--acc-rgb), .32);
+}
+.die-hub {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  text-align: center; z-index: 3; pointer-events: none;
+}
+.die-hub b {
+  display: block; font-family: "Bodoni Moda", Georgia, serif; font-weight: 600;
+  font-size: clamp(2.2rem, 6vw, 4rem); letter-spacing: -.04em; line-height: 1;
+  color: var(--gold-hi); font-variant-numeric: tabular-nums;
+}
+.die-hub em {
+  display: block; font-style: normal; margin-top: 8px;
+  font-family: "IBM Plex Mono", monospace; font-size: .56rem;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--paper-3);
+}
+.die-m {
+  position: absolute; left: 50%; top: 50%; z-index: 2;
+  width: 108px; margin: -13px 0 0 -54px; text-align: center;
+  /* The scroll rotation has to be in the ORBIT angle, not only in the
+     counter-rotation — otherwise the mark stays at twelve o'clock and
+     spins on its own axis while the disc turns behind it. The second
+     rotate cancels the total, which is what keeps the name upright. */
+  --ang: calc(var(--a, 0deg) + var(--k, 0) * 320deg);
+  transform:
+    rotate(var(--ang))
+    translateY(calc(var(--rad, 200px) * -1))
+    rotate(calc(-1 * var(--ang)));
+  font-family: "IBM Plex Mono", monospace; font-size: .55rem; font-weight: 500;
+  letter-spacing: .15em; text-transform: uppercase; color: var(--paper-2);
+}
+.die-m i {
+  display: block; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--gold-lo); margin: 0 auto 7px;
+}
+/* the index mark: fixed at the top, so the rim passes under it */
+.die-idx {
+  position: absolute; left: 50%; top: calc(50% - clamp(115px, 20vw, 235px) - 34px);
+  transform: translateX(-50%); z-index: 4; text-align: center; pointer-events: none;
+}
+.die-idx i { display: block; width: 1px; height: 20px; background: var(--gold); margin: 0 auto 7px; }
+.die-idx span {
+  font-family: "IBM Plex Mono", monospace; font-size: .53rem;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--gold);
+}
+
+/* ---------- 08. scroll ticker: position, not a timer.
+     A looping band whose offset is the scrub itself, so it runs backwards
+     the moment the reader does — which an animation on a timer cannot. ---------- */
+.sck { position: relative; z-index: 2; display: grid; align-content: center; gap: clamp(12px, 2vh, 22px); height: 100%; }
+.sck-row {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.sck-row .strip { display: flex; width: max-content; will-change: transform; }
+.sck-row.a .strip { transform: translateX(calc(var(--k, 0) * -50%)); }
+.sck-row.b .strip { transform: translateX(calc(-50% + var(--k, 0) * 50%)); }
+.sck-row span {
+  display: inline-flex; align-items: center; gap: clamp(18px, 2.4vw, 34px);
+  padding: 0 clamp(18px, 2.4vw, 34px); white-space: nowrap;
+  font-family: "Bodoni Moda", Didot, Georgia, serif; font-weight: 500;
+  font-size: clamp(1.7rem, 5.4vw, 4.2rem); letter-spacing: -.03em; line-height: 1.16;
+  color: var(--paper-4);
+}
+.sck-row span::after {
+  content: ""; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--gold-lo); flex: 0 0 auto;
+}
+.sck-row.b span { color: var(--paper-3); font-style: italic; }
+.sck-row span:nth-child(3n+1) { color: var(--gold); }
+.sck-note {
+  text-align: center; margin-top: clamp(14px, 2.4vh, 26px);
+  font-family: "IBM Plex Mono", monospace; font-size: .56rem;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--paper-3);
+}
+
 /* ============================================================
    26. RESPONSIVE
    ============================================================ */
@@ -2124,6 +2253,8 @@
   .wc p { font-size: clamp(1.05rem, 5.6vw, 1.6rem); max-width: 18ch; }
   .cin-num { font-size: clamp(4rem, 30vw, 9rem); }
   .hp-head { top: 78px; }
+  .die-idx { top: calc(50% - 44vw - 26px); }
+  .sck-row span { font-size: clamp(1.3rem, 8vw, 2rem); }
 }
 
 /* ============================================================
@@ -2190,6 +2321,10 @@
   .hp-rail { overflow-x: auto; }
   .cin-num { opacity: 1; transform: none; }
   .cin-l span { transform: none; opacity: 1; }
+  .die-disc { transform: none; }
+  .die-m { transform: rotate(var(--a, 0deg)) translateY(calc(var(--rad, 200px) * -1)) rotate(calc(var(--a, 0deg) * -1)); }
+  .sck-row .strip { transform: none !important; }
+  .sck-row { overflow-x: auto; }
   .df-l { transform: none; opacity: 1; }
   .df-copy { opacity: 1; transform: none; }
 

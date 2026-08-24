@@ -59,7 +59,7 @@ place while you rebuild sections natively one at a time.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.9.0/dist/dt-craft.css">
 
 <!-- Theme, set before first paint. Must be inline and blocking: a reader who
      chose light otherwise gets a frame of dark on every navigation. -->
@@ -80,10 +80,10 @@ place while you rebuild sections natively one at a time.
 
 ```html
 <!-- blank page: injects its own markup -->
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.standalone.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.9.0/dist/dt-craft.standalone.js" defer></script>
 
 <!-- or, once the sections exist natively in Webflow -->
-<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.js" defer></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.9.0/dist/dt-craft.js" defer></script> -->
 ```
 
 > Pin the version tag. Never point at `@main` — a commit would silently change
@@ -214,7 +214,7 @@ procedural grounds in all:
 | `cta.html` | honeycomb hive · vault door · aurora · drawn seal · marquee stamp |
 | `team.html` | orbit · roster with pointer-carried portrait · discipline helix |
 | `backgrounds.html` | six full-bleed scenes and the transitions between them, a parallax band, and every ground at thumbnail size |
-| `scroll.html` | six scroll set-pieces: gradient text, split screen, word cascade, horizontal pan, cinematic counter, depth flight |
+| `scroll.html` | eight scroll set-pieces: gradient text, split screen, word cascade, horizontal pan, cinematic counter, depth flight, scroll rotation, scroll ticker |
 
 Everything resolves through the same tokens as the homepage, so both axes
 repaint the lab as well. Nothing here introduces a hue.
@@ -231,7 +231,7 @@ A canvas declares which field it is and how to run it:
 
 `data-bg` is one of `starfield`, `rings`, `streaks`, `scan`, `grid3d`, `hex`,
 `mesh`, `contour`, `dust`, `moire`, `ledger`, `aurora`, `terrain`, `plasma`,
-`caustics`, `circuit`, `orbits` — seventeen in all, and `backgrounds.html`
+`caustics`, `circuit`, `orbits`, `blueprint` — eighteen in all, and `backgrounds.html`
 shows every one of them at thumbnail size.
 
 Each reads `--fx-rgb` **from its own host element**, so a field inside an
@@ -287,21 +287,62 @@ treatment below that is CSS reading the one value:
 </div>
 ```
 
-Six treatments ship: **gradient text** (a dim copy plus a lit copy uncovered a
+Eight treatments ship: **gradient text** (a dim copy plus a lit copy uncovered a
 line at a time, its gradient travelling as it goes), **split screen** (one word
 drawn twice, each half of the screen clipping its own half of it), **word
 cascade** (per-word offsets mixed in oklab from dim ink to accent), **horizontal
 pan** (`translateX(calc(var(--k) * (100vw - 100%)))` — the overshoot is exact,
-so nothing is measured and nothing goes stale on resize), **cinematic counter**
-and **depth flight**.
+so nothing is measured and nothing goes stale on resize), **cinematic counter**,
+**depth flight**, **scroll rotation** (the disc turns and every rim mark
+counter-rotates by the same amount, so the names stay upright — that
+cancellation is the whole trick) and **scroll ticker** (the band's offset *is*
+the scrub, so it runs backwards the moment the reader does, which an animation
+on a timer cannot).
 
 `data-k-out` on any element inside a pinned section turns it into a read-out of
 the scrub — `data-k-max` and `data-k-pad` set the range and the zero padding.
 `data-words` splits a paragraph for the cascade while leaving the real sentence
 in the accessibility tree.
 
-All six are reversible, all six settle to their finished frame under
+All eight are reversible, all eight settle to their finished frame under
 `prefers-reduced-motion`, and none of them uses a scroll library.
+
+### A page with its own ground
+
+By default every page sits on the shared molten atmosphere. A page that wants
+to be somewhere else entirely carries its own:
+
+```html
+<div id="labGround" data-cursor="off" data-fluid="off" data-lamp="on" aria-hidden="true">
+  <canvas data-bg="plasma" data-density=".5" data-speed=".45" data-alpha=".55"></canvas>
+  <canvas data-bg="blueprint"></canvas>
+  <span class="lg-wash"></span><span class="lg-lamp"></span>
+</div>
+```
+
+It is authored inside the page so it travels with the bundle, then lifted out
+to the body at boot — `position: fixed` inside `#scroller` would resolve against
+`#scroller` and ride the transform. `#atmo` is **removed** rather than hidden,
+so the shared shader never builds a WebGL context at all.
+
+`data-cursor="off"` drops the custom cursor and `data-fluid="off"` the fluid;
+`data-lamp="on"` replaces the trail with a drafting light that follows the
+pointer and lights the ground instead of marking it. `backgrounds.html` uses
+all four.
+
+### Photography
+
+`img/` holds the site's own photographs at 1600px, ~860 KB for the set. The
+`.html` files reference them as `./img/…`, which resolves on disk and on the
+demo; **the build rewrites those to the pinned CDN** in the generated bundles,
+because a Webflow page cannot resolve a relative path back to this repo. The
+tag it writes is the `VERSION` constant at the top of `build.js` — **bumping it
+is part of cutting a release.**
+
+Roughly half the guilloché plates are now photographs. The plates that remain
+are where they still read better than a picture would: the team ring stands in
+for people, and a landscape photograph is a worse placeholder there than an
+engraved plate.
 
 ### Using a lab page in Webflow
 
@@ -311,17 +352,17 @@ Head:
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-lab.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.9.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.9.0/dist/dt-lab.css">
 ```
 
 plus the same theme snippet the homepage uses. Before `</body>`, three tags —
 **in this order**:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-lab-media.js" defer></script>
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-lab.js" defer></script>
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.9.0/dist/dt-lab-media.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.9.0/dist/dt-lab.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.9.0/dist/dt-craft.js" defer></script>
 ```
 
 Swap `dt-lab-media.js` for `dt-lab-cards.js`, `-testimonials`, `-cta`,

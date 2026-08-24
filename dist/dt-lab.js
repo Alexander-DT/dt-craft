@@ -53,7 +53,25 @@
       f.innerHTML = C.foot;
       while (f.firstChild) sc.appendChild(f.firstChild);
     }
-    if (!document.getElementById('cur')) {
+    /* A page-level ground. It is authored inside the page so it travels
+       with the bundle, but position:fixed inside #scroller would resolve
+       against #scroller and ride the transform — so it is lifted out to
+       the body here, before anything measures it. */
+    var ground = document.getElementById('labGround');
+    if (ground) {
+      document.body.appendChild(ground);
+      /* removed, not hidden: the atmosphere module bails without #atmo,
+         so the shared molten field never builds a WebGL context at all */
+      var atmo = document.getElementById('atmo');
+      if (atmo) atmo.remove();
+      var fluid = document.getElementById('fluid');
+      if (fluid && ground.dataset.fluid === 'off') fluid.remove();
+    }
+
+    var wantsCursor = !(ground && ground.dataset.cursor === 'off');
+    var had = document.getElementById('cur');
+    if (!wantsCursor) { if (had) had.remove(); }
+    else if (!had) {
       var cur = document.createElement('div');
       cur.id = 'cur'; cur.setAttribute('aria-hidden', 'true');
       document.body.appendChild(cur);
@@ -895,6 +913,62 @@
     };
   };
 
+
+  /* ---------- blueprint: a drawing rather than an atmosphere. Minor and
+       major rules, registration crosses at the major intersections, and two
+       slow compass arcs so it reads as drafting paper and not graph paper.
+       This is the page-level ground for a page that wants to be somewhere
+       else entirely. ---------- */
+  FIELDS.blueprint = function (cv, ctx, o) {
+    var m = fit(cv, 1.35);
+    return function (t) {
+      m = fit(cv, 1.35);
+      ctx.clearRect(0, 0, m.w, m.h);
+      var minor = Math.max(14, 34 * m.dpr / o.density);
+      var major = minor * 5;
+      var dx = (t * 0.0022 * o.speed) % major;
+      var dy = (t * 0.0015 * o.speed) % major;
+      var x, y;
+      ctx.lineWidth = m.dpr;
+
+      ctx.strokeStyle = 'rgba(' + o.rgb + ',' + (0.075 * o.alpha).toFixed(3) + ')';
+      ctx.beginPath();
+      for (x = -major + dx; x < m.w + major; x += minor) { ctx.moveTo(x, 0); ctx.lineTo(x, m.h); }
+      for (y = -major + dy; y < m.h + major; y += minor) { ctx.moveTo(0, y); ctx.lineTo(m.w, y); }
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(' + o.rgb + ',' + (0.21 * o.alpha).toFixed(3) + ')';
+      ctx.beginPath();
+      for (x = -major + dx; x < m.w + major; x += major) { ctx.moveTo(x, 0); ctx.lineTo(x, m.h); }
+      for (y = -major + dy; y < m.h + major; y += major) { ctx.moveTo(0, y); ctx.lineTo(m.w, y); }
+      ctx.stroke();
+
+      /* registration crosses: the mark that says this is a drawing */
+      var k = 5 * m.dpr;
+      ctx.strokeStyle = 'rgba(' + o.rgb + ',' + (0.46 * o.alpha).toFixed(3) + ')';
+      ctx.beginPath();
+      for (x = -major + dx; x < m.w + major; x += major) {
+        for (y = -major + dy; y < m.h + major; y += major) {
+          ctx.moveTo(x - k, y); ctx.lineTo(x + k, y);
+          ctx.moveTo(x, y - k); ctx.lineTo(x, y + k);
+        }
+      }
+      ctx.stroke();
+
+      /* two compass arcs, drifting slowly out of step */
+      var a = t * 0.00004 * o.speed;
+      ctx.strokeStyle = 'rgba(' + o.rgb + ',' + (0.24 * o.alpha).toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.arc(m.w * (0.24 + Math.sin(a) * 0.06), m.h * (0.7 + Math.cos(a * 1.3) * 0.07),
+              Math.min(m.w, m.h) * 0.46, 0, 6.283);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(m.w * (0.78 + Math.cos(a * 0.8) * 0.05), m.h * (0.26 + Math.sin(a * 1.1) * 0.06),
+              Math.min(m.w, m.h) * 0.34, 0, 6.283);
+      ctx.stroke();
+    };
+  };
+
   /* Exposed for debugging only: a hidden or headless tab never runs a
      frame, so this is how a draw path gets exercised without one. */
   window.DTLab = { FIELDS: FIELDS, fit: fit };
@@ -1730,7 +1804,7 @@
      The strip is duplicated so the -50% loop has something to run into.
      ========================================================= */
   (function marqueeWall() {
-    $$('.wall-col > .strip, .tm-band > .strip').forEach(function (strip) {
+    $$('.wall-col > .strip, .tm-band > .strip, .sck-row > .strip').forEach(function (strip) {
       var kids = [].slice.call(strip.children);
       if (!kids.length) return;
       kids.forEach(function (k) {
@@ -2209,6 +2283,53 @@
         write(k);
       });
       write(0);
+    });
+  })();
+
+  /* =========================================================
+     25. DRAFTING LIGHT — the pointer treatment for a page that has
+     dropped the shared cursor and trail. One lerped radial over the
+     page ground: it lights the drawing rather than leaving a mark on it.
+     ========================================================= */
+  (function draftingLight() {
+    var g = document.getElementById('labGround');
+    if (!g || g.dataset.lamp !== 'on' || touch || reduce) return;
+    var tx = 50, ty = 50, cx = 50, cy = 50, raf = 0;
+    function run() {
+      raf = requestAnimationFrame(run);
+      cx = lerp(cx, tx, 0.085); cy = lerp(cy, ty, 0.085);
+      g.style.setProperty('--lx', cx.toFixed(2) + '%');
+      g.style.setProperty('--ly', cy.toFixed(2) + '%');
+      if (Math.abs(cx - tx) < 0.05 && Math.abs(cy - ty) < 0.05) { cancelAnimationFrame(raf); raf = 0; }
+    }
+    addEventListener('pointermove', function (e) {
+      tx = e.clientX / innerWidth * 100;
+      ty = e.clientY / innerHeight * 100;
+      g.classList.add('lit');
+      if (!raf) run();
+    }, { passive: true });
+    addEventListener('pointerleave', function () { g.classList.remove('lit'); }, { passive: true });
+  })();
+
+  /* =========================================================
+     26. THE DIE — marks placed around a rim whose radius is the disc's,
+     measured rather than guessed so it survives the clamp().
+     ========================================================= */
+  (function die() {
+    $$('.die').forEach(function (host) {
+      var disc = $('.die-disc', host);
+      var marks = $$('.die-m', host);
+      if (!disc || !marks.length) return;
+      var step = 360 / marks.length;
+      function measure() {
+        var rad = disc.getBoundingClientRect().width / 2 + 34;
+        marks.forEach(function (m, i) {
+          m.style.setProperty('--a', (i * step).toFixed(2) + 'deg');
+          m.style.setProperty('--rad', rad.toFixed(1) + 'px');
+        });
+      }
+      measure();
+      addEventListener('resize', measure, { passive: true });
     });
   })();
 

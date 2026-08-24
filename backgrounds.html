@@ -23,6 +23,17 @@
 
 <div id="vp"><div id="scroller">
 
+  <!-- This page's own ground. Lifted out to the body at boot, where it
+       replaces the shared molten atmosphere outright rather than sitting
+       on top of it — and it drops the custom cursor and the image trail
+       for a drafting light that follows the pointer instead. -->
+  <div id="labGround" data-cursor="off" data-fluid="off" data-lamp="on" aria-hidden="true">
+    <canvas data-bg="plasma" data-density=".5" data-speed=".45" data-alpha=".55"></canvas>
+    <canvas data-bg="blueprint" data-density="1" data-speed="1" data-alpha="1"></canvas>
+    <span class="lg-wash"></span>
+    <span class="lg-lamp"></span>
+  </div>
+
   <header class="lab-hero">
     <div class="wrap">
       <p class="mono eyebrow rv">Component lab &middot; 06 &nbsp;/&nbsp; Backgrounds</p>
