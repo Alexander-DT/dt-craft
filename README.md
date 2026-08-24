@@ -25,7 +25,7 @@ dist/dt-lab.css                the component lab's styling
 dist/dt-lab.js                 the component lab's behaviour
 dist/dt-lab-chrome.js          nav + palette + atmosphere + footer (generated)
 dist/dt-lab-<page>.js          one per lab page: chrome + markup   (generated)
-media|cards|testimonials|cta|team|backgrounds.html   the six lab pages
+media|cards|…|backgrounds|scroll.html      the seven lab pages
 
 build.js                       regenerates everything marked (generated)
 ```
@@ -59,7 +59,7 @@ place while you rebuild sections natively one at a time.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.css">
 
 <!-- Theme, set before first paint. Must be inline and blocking: a reader who
      chose light otherwise gets a frame of dark on every navigation. -->
@@ -80,10 +80,10 @@ place while you rebuild sections natively one at a time.
 
 ```html
 <!-- blank page: injects its own markup -->
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.standalone.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.standalone.js" defer></script>
 
 <!-- or, once the sections exist natively in Webflow -->
-<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.js" defer></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.js" defer></script> -->
 ```
 
 > Pin the version tag. Never point at `@main` — a commit would silently change
@@ -202,7 +202,7 @@ arrival choreography attaches itself.
 
 ## The component lab
 
-Six pages of alternatives, so a direction can be chosen from something
+Seven pages of alternatives, so a direction can be chosen from something
 scrollable rather than from a description. Nineteen components and seventeen
 procedural grounds in all:
 
@@ -214,6 +214,7 @@ procedural grounds in all:
 | `cta.html` | honeycomb hive · vault door · aurora · drawn seal · marquee stamp |
 | `team.html` | orbit · roster with pointer-carried portrait · discipline helix |
 | `backgrounds.html` | six full-bleed scenes and the transitions between them, a parallax band, and every ground at thumbnail size |
+| `scroll.html` | six scroll set-pieces: gradient text, split screen, word cascade, horizontal pan, cinematic counter, depth flight |
 
 Everything resolves through the same tokens as the homepage, so both axes
 repaint the lab as well. Nothing here introduces a hue.
@@ -273,6 +274,35 @@ no request, and it re-inks on both axes because every stop is an accent token.
 `--pa` sets the engraving angle and `--pb` the radial pitch; unset, they are
 stamped from the element's index so no two on a page are cut the same way.
 
+### Scroll set-pieces
+
+`scroll.html` is the same rig again, aimed at sections rather than whole
+pages. A tall section carries `data-pin` and holds a `.pin-stage`; the module
+drives the stage's pin offset and writes `--k` across the section, and every
+treatment below that is CSS reading the one value:
+
+```html
+<div class="pin" data-pin>
+  <div class="pin-stage"> … </div>
+</div>
+```
+
+Six treatments ship: **gradient text** (a dim copy plus a lit copy uncovered a
+line at a time, its gradient travelling as it goes), **split screen** (one word
+drawn twice, each half of the screen clipping its own half of it), **word
+cascade** (per-word offsets mixed in oklab from dim ink to accent), **horizontal
+pan** (`translateX(calc(var(--k) * (100vw - 100%)))` — the overshoot is exact,
+so nothing is measured and nothing goes stale on resize), **cinematic counter**
+and **depth flight**.
+
+`data-k-out` on any element inside a pinned section turns it into a read-out of
+the scrub — `data-k-max` and `data-k-pad` set the range and the zero padding.
+`data-words` splits a paragraph for the cascade while leaving the real sentence
+in the accessibility tree.
+
+All six are reversible, all six settle to their finished frame under
+`prefers-reduced-motion`, and none of them uses a scroll library.
+
 ### Using a lab page in Webflow
 
 Head:
@@ -281,21 +311,21 @@ Head:
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-lab.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-lab.css">
 ```
 
 plus the same theme snippet the homepage uses. Before `</body>`, three tags —
 **in this order**:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-lab-media.js" defer></script>
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-lab.js" defer></script>
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-lab-media.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-lab.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.8.0/dist/dt-craft.js" defer></script>
 ```
 
 Swap `dt-lab-media.js` for `dt-lab-cards.js`, `-testimonials`, `-cta`,
-`-team` or `-backgrounds`. Deferred scripts run in document order, so the markup exists before
+`-team`, `-backgrounds` or `-scroll`. Deferred scripts run in document order, so the markup exists before
 `dt-lab.js` looks for its components and before `dt-craft.js` looks for
 `#themeSw`. Reverse any two and the theme switch is dead.
 

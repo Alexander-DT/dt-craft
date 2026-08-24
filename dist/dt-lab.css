@@ -1865,6 +1865,223 @@
   letter-spacing: .14em; color: var(--paper-3);
 }
 
+
+/* ============================================================
+   31. SCROLL SET-PIECES
+   One rig, six treatments. A tall section carries [data-pin]; the
+   module inside drives its pin offset and writes --k across it, and
+   everything below is CSS reading that one value.
+
+   Same reason as everywhere else in this file: not position:sticky.
+   ============================================================ */
+.pin { position: relative; z-index: 1; height: 260vh; }
+.pin-stage {
+  position: relative; height: 100vh; overflow: hidden;
+  will-change: transform;
+  display: grid; align-content: center;
+}
+.pin-stage > .wrap { position: relative; z-index: 2; width: min(1200px, 100% - 48px); }
+.pin-bg { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block; }
+.pin-veil {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(110% 80% at 50% 45%, transparent 30%, rgba(var(--ground-rgb), .7));
+}
+/* the progress read-out every set-piece carries */
+.pin-meter {
+  position: absolute; z-index: 5; left: 0; right: 0; bottom: clamp(22px, 4vh, 40px);
+  display: flex; align-items: center; gap: 16px;
+  width: min(1200px, 100% - 48px); margin: 0 auto;
+  font-family: "IBM Plex Mono", monospace; font-size: .56rem;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--paper-3);
+}
+.pin-meter b { color: var(--gold); font-weight: 500; font-variant-numeric: tabular-nums; }
+.pin-meter .bar { position: relative; flex: 1; height: 1px; background: var(--line-2); overflow: hidden; }
+.pin-meter .bar i {
+  position: absolute; inset: 0; display: block;
+  background: linear-gradient(90deg, var(--gold-lo), var(--gold));
+  transform-origin: 0 50%; transform: scaleX(var(--k, 0));
+}
+
+/* ---------- 01. gradient text: the dim copy stays, a lit copy is
+     uncovered line by line, and the gradient inside it travels ---------- */
+.gt { position: relative; }
+.gt p {
+  font-family: "Bodoni Moda", Didot, Georgia, serif; font-weight: 500;
+  font-size: clamp(1.5rem, 4.4vw, 3.4rem); line-height: 1.18; letter-spacing: -.026em;
+  margin: 0; text-wrap: pretty;
+}
+.gt-dim { color: var(--paper-4); }
+.gt-lit {
+  position: absolute; inset: 0; z-index: 2;
+  color: transparent;
+  background-image: linear-gradient(96deg,
+    var(--gold-lo) 0%, var(--gold) 26%, var(--gold-hi) 46%, var(--gold) 66%, var(--gold-lo) 100%);
+  background-size: 220% 100%;
+  background-position: calc(100% - var(--k, 0) * 120%) 0;
+  -webkit-background-clip: text; background-clip: text;
+  /* uncovered from the top, a line at a time */
+  clip-path: inset(0 0 calc((1 - clamp(0, var(--k, 0) * 1.16, 1)) * 100%) 0);
+}
+
+/* ---------- 02. split screen ---------- */
+.sp2 { position: absolute; inset: 0; z-index: 3; }
+.sp2-half { position: absolute; left: 0; right: 0; height: 50%; overflow: hidden; }
+.sp2-half.t {
+  top: 0; transform: translateY(calc(var(--k, 0) * -100%));
+  border-bottom: 1px solid var(--gold-lo);
+  background: linear-gradient(180deg, rgba(var(--sf-2), 1), rgba(var(--sf-1), .98));
+}
+.sp2-half.b {
+  bottom: 0; transform: translateY(calc(var(--k, 0) * 100%));
+  border-top: 1px solid var(--gold-lo);
+  background: linear-gradient(0deg, rgba(var(--sf-2), 1), rgba(var(--sf-1), .98));
+}
+/* one word, drawn twice at the same place — each half clips its own half */
+.sp2-word {
+  position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap;
+  font-family: "Bodoni Moda", Didot, Georgia, serif; font-weight: 500;
+  font-size: clamp(3.4rem, 15vw, 12rem); line-height: 1; letter-spacing: -.045em;
+  color: var(--paper);
+}
+.sp2-half.t .sp2-word { top: 100%; transform: translateY(-50%); }
+.sp2-half.b .sp2-word { bottom: 100%; transform: translateY(50%); }
+.sp2-behind {
+  position: absolute; inset: 0; z-index: 1;
+  display: grid; place-items: center; text-align: center;
+  opacity: clamp(0, (var(--k, 0) - .3) * 2.2, 1);
+  transform: scale(calc(.93 + clamp(0, (var(--k, 0) - .3) * 2.2, 1) * .07));
+}
+.sp2-behind h3 {
+  font-family: "Bodoni Moda", Georgia, serif; font-weight: 500;
+  font-size: clamp(1.8rem, 5vw, 3.6rem); letter-spacing: -.03em; line-height: 1;
+  margin: 0 0 16px; color: var(--paper);
+}
+.sp2-behind p { color: var(--paper-2); max-width: 46ch; margin: 0 auto; }
+
+/* ---------- 03. word cascade ---------- */
+.wc p {
+  font-family: "Instrument Sans", sans-serif; font-weight: 500;
+  font-size: clamp(1.3rem, 3.6vw, 2.7rem); line-height: 1.32; letter-spacing: -.02em;
+  margin: 0; max-width: 22ch;
+}
+.wc-w {
+  --w: clamp(0, (var(--k, 0) - var(--th, 0)) * 7, 1);
+  color: var(--paper-4);
+  /* progressive: without color-mix each word simply lands at once */
+  color: color-mix(in oklab, var(--gold-hi) calc(var(--w) * 100%), var(--paper-4));
+  transition: none;
+}
+.wc-w.em { color: color-mix(in oklab, var(--gold) calc(var(--w) * 100%), var(--paper-4)); font-style: italic; }
+
+/* ---------- 04. horizontal pan ---------- */
+.hp-rail { position: relative; z-index: 2; overflow: hidden; }
+.hp-track {
+  display: flex; align-items: center; gap: clamp(16px, 2.2vw, 30px);
+  width: max-content; padding: 0 clamp(24px, 6vw, 90px);
+  /* 100vw - 100% is the exact overshoot, so nothing has to be measured */
+  transform: translateX(calc(var(--k, 0) * (100vw - 100%)));
+  will-change: transform;
+}
+.hp-c {
+  position: relative; flex: 0 0 auto;
+  width: clamp(230px, 26vw, 360px); height: clamp(300px, 38vw, 460px);
+  border: 1px solid var(--line); border-radius: 3px; overflow: hidden;
+  background: rgba(var(--sf-2), .92);
+  box-shadow: inset 0 1px 0 var(--edge-2), 0 30px 62px -38px var(--cast-1);
+}
+.hp-c img, .hp-c .gplate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hp-c img { filter: grayscale(var(--img-dim)) contrast(1.04); transition: filter .7s var(--ease); }
+.hp-c:hover img { filter: grayscale(var(--img-lift)) contrast(1.07); }
+.hp-c::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 46%, rgba(var(--veil-rgb), .72));
+}
+.hp-c figcaption {
+  position: absolute; z-index: 2; left: 13px; right: 13px; bottom: 12px;
+  display: flex; justify-content: space-between; gap: 10px;
+  font-family: "IBM Plex Mono", monospace; font-size: .53rem;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--on-media);
+}
+.hp-c figcaption em { font-style: normal; color: var(--on-acc-2); }
+.hp-head {
+  position: absolute; z-index: 4; left: 0; right: 0; top: clamp(84px, 12vh, 130px);
+  width: min(1200px, 100% - 48px); margin: 0 auto; pointer-events: none;
+}
+.hp-head .k { display: block; color: var(--gold); margin-bottom: 12px; }
+.hp-head h3 {
+  font-family: "Bodoni Moda", Georgia, serif; font-weight: 500;
+  font-size: clamp(1.8rem, 4.6vw, 3.2rem); letter-spacing: -.03em; line-height: 1;
+  margin: 0; color: var(--paper); max-width: 16ch;
+}
+
+/* ---------- 05. cinematic counter ---------- */
+.cin { position: relative; text-align: center; }
+.cin-num {
+  font-family: "Bodoni Moda", Georgia, serif; font-weight: 600;
+  font-size: clamp(5rem, 26vw, 20rem); line-height: .84; letter-spacing: -.05em;
+  color: var(--gold-hi); font-variant-numeric: tabular-nums;
+  margin: 0; opacity: calc(1 - clamp(0, (var(--k, 0) - .58) * 2.6, 1));
+  transform: scale(calc(1 - clamp(0, (var(--k, 0) - .58) * 2.6, 1) * .18));
+}
+.cin-lines { margin-top: -.1em; }
+.cin-l {
+  display: block; overflow: hidden;
+  font-family: "Bodoni Moda", Georgia, serif; font-weight: 500;
+  font-size: clamp(1.4rem, 4.4vw, 3.2rem); letter-spacing: -.03em; line-height: 1.08;
+  color: var(--paper);
+}
+.cin-l span {
+  display: block;
+  --kl: clamp(0, (var(--k, 0) - var(--th, 0)) * 3.4, 1);
+  transform: translateY(calc((1 - var(--kl)) * 106%));
+  opacity: var(--kl);
+}
+.cin-shot {
+  position: absolute; inset: 0; z-index: 0; overflow: hidden;
+  opacity: clamp(0, (var(--k, 0) - .34) * 2, 1);
+}
+.cin-shot img, .cin-shot .gplate {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  transform: scale(calc(1.28 - clamp(0, var(--k, 0), 1) * .28));
+  filter: grayscale(calc((1 - var(--k, 0)) * 90%)) contrast(1.05);
+}
+.cin-shot::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(90% 70% at 50% 50%, rgba(var(--ground-rgb), .62), rgba(var(--ground-rgb), .92));
+}
+
+/* ---------- 06. depth flight ---------- */
+.df { position: absolute; inset: 0; z-index: 1; }
+.df-l {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  transform: scale(calc(1 + var(--k, 0) * var(--rate, 1)));
+  opacity: clamp(0, 1 - (var(--k, 0) - var(--out, .7)) * 4, 1);
+  will-change: transform, opacity;
+}
+.df-l .ring {
+  width: clamp(180px, 30vw, 420px); aspect-ratio: 1; border-radius: 50%;
+  border: 1px solid rgba(var(--acc-rgb), .3);
+  box-shadow: inset 0 0 60px -30px rgba(var(--acc-rgb), .6);
+}
+.df-l .plate {
+  width: clamp(150px, 24vw, 330px); aspect-ratio: 4 / 5;
+  border: 1px solid var(--line); border-radius: 3px; overflow: hidden; position: relative;
+  box-shadow: inset 0 1px 0 var(--edge-3), 0 40px 80px -44px var(--cast-2);
+}
+.df-l .plate > * { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.df-copy {
+  position: relative; z-index: 4; text-align: center;
+  opacity: clamp(0, (var(--k, 0) - .52) * 3, 1);
+  transform: translateY(calc((1 - clamp(0, (var(--k, 0) - .52) * 3, 1)) * 30px));
+}
+.df-copy h3 {
+  font-family: "Bodoni Moda", Georgia, serif; font-weight: 500;
+  font-size: clamp(1.9rem, 5.6vw, 4rem); letter-spacing: -.032em; line-height: 1;
+  margin: 0 0 14px; color: var(--paper);
+}
+.df-copy p { color: var(--paper-2); max-width: 44ch; margin: 0 auto; }
+
 /* ============================================================
    26. RESPONSIVE
    ============================================================ */
@@ -1902,6 +2119,11 @@
   .scene-tag { display: none; }
   .scenes-rail { left: 10px; }
   .scene-copy h2 { font-size: clamp(2rem, 9vw, 3rem); }
+  .pin { height: 220vh; }
+  .gt p { font-size: clamp(1.15rem, 6vw, 1.7rem); }
+  .wc p { font-size: clamp(1.05rem, 5.6vw, 1.6rem); max-width: 18ch; }
+  .cin-num { font-size: clamp(4rem, 30vw, 9rem); }
+  .hp-head { top: 78px; }
 }
 
 /* ============================================================
@@ -1956,6 +2178,20 @@
   .scene-copy { transform: none; opacity: 1; }
   .scene-tag { opacity: 1; }
   .plx-l { transform: none !important; }
+
+  /* the set-pieces resolve to their finished frame and stop pinning */
+  .pin { height: auto; }
+  .pin-stage { height: auto; overflow: visible; transform: none !important; padding: 80px 0; }
+  .gt-lit { clip-path: none; }
+  .sp2-half.t { transform: translateY(-100%); }
+  .sp2-half.b { transform: translateY(100%); }
+  .sp2-behind { opacity: 1; transform: none; }
+  .hp-track { transform: none; }
+  .hp-rail { overflow-x: auto; }
+  .cin-num { opacity: 1; transform: none; }
+  .cin-l span { transform: none; opacity: 1; }
+  .df-l { transform: none; opacity: 1; }
+  .df-copy { opacity: 1; transform: none; }
 
   .flow-track, .flow-f { transform: none !important; }
   .flow { -webkit-mask-image: none; mask-image: none; overflow-x: auto; }

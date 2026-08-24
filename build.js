@@ -117,7 +117,7 @@ fs.writeFileSync(path.join(ROOT, 'dist/dt-lab-chrome.js'), chrome, 'utf8');
    Local hrefs (media.html) become hosted routes (/media) on the way in:
    the .html files stay openable straight off disk, and the bundles are
    correct for a real site. */
-const LAB = ['media', 'cards', 'testimonials', 'cta', 'team', 'backgrounds'];
+const LAB = ['media', 'cards', 'testimonials', 'cta', 'team', 'backgrounds', 'scroll'];
 
 const labSizes = LAB.map(slug => {
   const src = read(slug + '.html');

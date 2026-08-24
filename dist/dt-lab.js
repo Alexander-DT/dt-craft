@@ -65,7 +65,7 @@
        the current URL says which one this is. */
     var LAB = [['media', 'Media'], ['cards', 'Cards'],
                ['testimonials', 'Quotes'], ['cta', 'CTA'], ['team', 'Team'],
-               ['backgrounds', 'Grounds']];
+               ['backgrounds', 'Grounds'], ['scroll', 'Scroll']];
     var path = location.pathname.toLowerCase();
     /* DTLabPage is only set by a generated bundle, which already carries
        hosted routes in its markup -- so its presence settles the question
@@ -2145,6 +2145,70 @@
       }
       loop(host, paint);
       paint();
+    });
+  })();
+
+  /* =========================================================
+     24. SCROLL SET-PIECES — one rig, six treatments.
+
+     A tall [data-pin] section holds a viewport-height stage. This drives
+     the stage's pin offset and writes --k across the section; every
+     treatment below it is CSS reading that one value. Adding a seventh
+     is a block of CSS, not a branch in here.
+     ========================================================= */
+  (function setpieces() {
+    /* words first: the cascade needs each one addressable, and stamping
+       the offsets here means the markup stays a paragraph */
+    $$('[data-words]').forEach(function (el) {
+      var em = (el.dataset.em || '').toLowerCase();
+      var words = el.textContent.trim().split(/\s+/);
+      var sr = document.createElement('span');
+      sr.className = 'sr-only';
+      sr.textContent = words.join(' ');
+      var vis = document.createElement('span');
+      vis.setAttribute('aria-hidden', 'true');
+      var spread = parseFloat(el.dataset.spread || '0.82');
+      words.forEach(function (w, i) {
+        var sp = document.createElement('span');
+        sp.className = 'wc-w' + (em && w.toLowerCase().replace(/[^a-z]/g, '') === em ? ' em' : '');
+        sp.style.setProperty('--th', (i / words.length * spread).toFixed(4));
+        sp.textContent = w;
+        vis.appendChild(sp);
+        if (i < words.length - 1) vis.appendChild(document.createTextNode(' '));
+      });
+      el.textContent = '';
+      el.appendChild(sr);
+      el.appendChild(vis);
+    });
+
+    $$('[data-pin]').forEach(function (host) {
+      var stage = $('.pin-stage', host);
+      if (!stage) return;
+      var outs = $$('[data-k-out]', host);
+
+      function write(k) {
+        host.style.setProperty('--k', k.toFixed(4));
+        for (var i = 0; i < outs.length; i++) {
+          var el = outs[i];
+          var max = parseFloat(el.getAttribute('data-k-max') || '100');
+          var pad = parseInt(el.getAttribute('data-k-pad') || '3', 10);
+          var v = String(Math.round(k * max));
+          while (v.length < pad) v = '0' + v;
+          el.textContent = v;
+        }
+      }
+
+      if (reduce) { write(1); return; }
+
+      var drive = pin(host, stage), last = -1;
+      loop(host, function () {
+        drive();
+        var k = progress(host, 'through');
+        if (Math.abs(k - last) < 0.003) return;
+        last = k;
+        write(k);
+      });
+      write(0);
     });
   })();
 
