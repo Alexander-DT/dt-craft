@@ -1,0 +1,34 @@
+{
+ "home": {
+  "title": "Treasury Vault",
+  "desc": ""
+ },
+ "media": {
+  "title": "Media — Component Lab — Digital Treasury",
+  "desc": "Five ways to present a body of work: an orbital carousel, a cylinder drum, a velocity-driven rail, a slice slider and a scrubbed gallery."
+ },
+ "cards": {
+  "title": "Cards — Component Lab — Digital Treasury",
+  "desc": "Five ways to give a set of things unequal weight: a highlight accordion, a throw deck, a morphing bento, a scrubbed stack and a tilt grid."
+ },
+ "testimonials": {
+  "title": "Testimonials — Component Lab — Digital Treasury",
+  "desc": "Five ways to make a testimonial section worth stopping for: an orbit, a leaning wall, a spotlight rail, a coverflow and a ledger."
+ },
+ "cta": {
+  "title": "Call to action — Component Lab — Digital Treasury",
+  "desc": "Five ways to ask for the meeting: a honeycomb hive, a vault door on the scrollbar, an aurora plate, a drawn seal and a marquee stamp."
+ },
+ "team": {
+  "title": "Team — Component Lab — Digital Treasury",
+  "desc": "Three ways to introduce a team: an orbit with a focused centre, a ruled roster with the portrait on the pointer, and a helix of disciplines."
+ },
+ "backgrounds": {
+  "title": "Backgrounds — Component Lab — Digital Treasury",
+  "desc": "Seventeen procedural grounds, and six ways one scene arrives over the last: cover, curtain, iris, fold, slide and push — all scrubbed from the scrollbar."
+ },
+ "scroll": {
+  "title": "Scroll — Component Lab — Digital Treasury",
+  "desc": "Eight scroll set-pieces, one per section: gradient text, split screen, word cascade, horizontal pan, cinematic counter, depth flight, scroll rotation and a scroll-driven ticker."
+ }
+}
