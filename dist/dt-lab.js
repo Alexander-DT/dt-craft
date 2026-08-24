@@ -175,6 +175,17 @@
     return { w: w, h: h, dpr: dpr, cw: r.width, ch: r.height };
   }
 
+  /* "Founder & Director" -> "FD". Used wherever a portrait is pending: an
+     engraved plate with initials cut into it is a deliberate placeholder,
+     which an unfilled texture is not. */
+  function initials(str) {
+    return (str || '').trim().split(/[\s&]+/)
+      .filter(function (w) { return /[A-Za-z]/.test(w); })
+      .slice(0, 2)
+      .map(function (w) { return w.charAt(0).toUpperCase(); })
+      .join('');
+  }
+
   /* seeded, so a reload lays the same field down twice */
   function rng(seed) {
     var s = seed >>> 0;
@@ -1865,7 +1876,8 @@
           var img = n.dataset.img;
           shot.innerHTML = (img
             ? '<img src="' + img + '" alt="" loading="lazy" decoding="async">'
-            : '<span class="gplate" style="--pa:' + (i * 37) + ';--pb:' + (i * 3) + '"></span>')
+            : '<span class="gplate" style="--pa:' + (i * 37) + ';--pb:' + (i * 3) + '"></span>' +
+              '<span class="mono-lg" aria-hidden="true">' + initials(n.dataset.who) + '</span>')
             + '<span class="badge mono">' + (n.dataset.badge || '') + '</span>';
         }
         n.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' });
@@ -2060,7 +2072,16 @@
       }
       measure();
       addEventListener('resize', measure, { passive: true });
-      ms.forEach(function (m, i) { m.style.setProperty('--a', (i * step) + 'deg'); });
+      ms.forEach(function (m, i) {
+        m.style.setProperty('--a', (i * step) + 'deg');
+        if (!$('img', m) && !$('.ot-mono', m)) {
+          var mo = document.createElement('span');
+          mo.className = 'ot-mono';
+          mo.setAttribute('aria-hidden', 'true');
+          mo.textContent = initials(m.dataset.name);
+          m.appendChild(mo);
+        }
+      });
 
       function show(i) {
         if (i === cur) return;
@@ -2072,7 +2093,8 @@
           core.innerHTML =
             '<span class="shot">' + (img
               ? '<img src="' + img + '" alt="" loading="lazy" decoding="async">'
-              : '<span class="gplate" style="--pa:' + (i * 53) + ';--pb:' + (i * 4) + '"></span>') + '</span>' +
+              : '<span class="gplate" style="--pa:' + (i * 53) + ';--pb:' + (i * 4) + '"></span>' +
+                '<span class="mono-lg" aria-hidden="true">' + initials(m.dataset.name) + '</span>') + '</span>' +
             '<h3>' + (m.dataset.name || '') + '</h3>' +
             '<span class="mono role">' + (m.dataset.role || '') + '</span>' +
             '<p>' + (m.dataset.bio || '') + '</p>';
@@ -2124,9 +2146,11 @@
     $$('.rost-r', host).forEach(function (r, i) {
       r.addEventListener('pointerenter', function () {
         var img = r.dataset.img;
+        var nm = $('.rost-name', r);
         follow.innerHTML = img
           ? '<img src="' + img + '" alt="" loading="lazy" decoding="async">'
-          : '<span class="gplate" style="--pa:' + (i * 61) + ';--pb:' + (i * 5) + '"></span>';
+          : '<span class="gplate" style="--pa:' + (i * 61) + ';--pb:' + (i * 5) + '"></span>' +
+            '<span class="mono-lg">' + initials(nm && nm.textContent) + '</span>';
         on = true; follow.classList.add('on');
         if (!raf) run();
       });

@@ -2238,6 +2238,23 @@
   letter-spacing: .18em; text-transform: uppercase; color: var(--paper-3);
 }
 
+
+/* ---------- portrait pending ----------
+   Where the subject is a person and there is no photograph yet, an engraved
+   plate with the initials cut into it reads as a deliberate placeholder. A
+   landscape photograph dropped into a portrait slot does not. */
+.ot-mono, .ot-core .shot .mono-lg, .rost-follow .mono-lg, .spot-shot .mono-lg {
+  position: absolute; inset: 0; z-index: 2;
+  display: grid; place-items: center; pointer-events: none;
+  font-family: "Bodoni Moda", Georgia, serif; font-weight: 500;
+  letter-spacing: .05em; color: var(--gold);
+}
+.ot-mono { font-size: clamp(1.1rem, 2.4vw, 1.5rem); }
+.ot-m[aria-selected="true"] .ot-mono { color: var(--gold-hi); }
+.ot-core .shot .mono-lg { font-size: clamp(2rem, 5vw, 2.9rem); color: var(--gold-hi); }
+.rost-follow .mono-lg { font-size: clamp(2.2rem, 5vw, 3.2rem); }
+.spot-shot .mono-lg { font-size: clamp(2.6rem, 7vw, 4rem); }
+
 /* ============================================================
    26. RESPONSIVE
    ============================================================ */

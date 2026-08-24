@@ -59,7 +59,7 @@ place while you rebuild sections natively one at a time.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.11.0/dist/dt-craft.css">
 
 <!-- Theme, set before first paint. Must be inline and blocking: a reader who
      chose light otherwise gets a frame of dark on every navigation. -->
@@ -80,10 +80,10 @@ place while you rebuild sections natively one at a time.
 
 ```html
 <!-- blank page: injects its own markup -->
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-craft.standalone.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.11.0/dist/dt-craft.standalone.js" defer></script>
 
 <!-- or, once the sections exist natively in Webflow -->
-<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-craft.js" defer></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.11.0/dist/dt-craft.js" defer></script> -->
 ```
 
 > Pin the version tag. Never point at `@main` — a commit would silently change
@@ -352,7 +352,7 @@ Two shapes work. **Pick one and do not mix them.**
 the fonts, `dt-craft.css` and the theme snippet; before `</body>`:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-craft.standalone.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.11.0/dist/dt-craft.standalone.js" defer></script>
 ```
 
 `standalone` carries the markup **and** the craft layer. Never pair it with
@@ -367,16 +367,16 @@ once there is more than one page.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-craft.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-lab.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.11.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.11.0/dist/dt-lab.css">
 ```
 
 plus the theme snippet. *Project Settings → Custom Code → Footer* — **the two
 shared files, and nothing page-specific:**
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-lab.js" defer></script>
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-craft.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.11.0/dist/dt-lab.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.11.0/dist/dt-craft.js" defer></script>
 ```
 
 Then each page's **own head code** carries one line — its markup bundle:
