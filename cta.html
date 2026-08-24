@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call to action — Component Lab — Digital Treasury</title>
+<meta name="description" content="Five ways to ask for the meeting: a honeycomb hive, a vault door on the scrollbar, an aurora plate, a drawn seal and a marquee stamp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="./dist/dt-craft.css">
+<link rel="stylesheet" href="./dist/dt-lab.css">
+<script>
+(function(){try{
+  var r=document.documentElement,t=localStorage.getItem('dt-theme'),a=localStorage.getItem('dt-accent');
+  if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  r.setAttribute('data-theme',t);
+  r.setAttribute('data-accent',/^(gold|amber|azure|verdant|crimson|violet)$/.test(a)?a:'gold');
+}catch(e){}})();
+</script>
+</head>
+<body>
+
+<div id="vp"><div id="scroller">
+
+  <header class="lab-hero">
+    <div class="wrap">
+      <p class="mono eyebrow rv">Component lab &middot; 04 &nbsp;/&nbsp; Call to action</p>
+      <h1 class="rv">Five ways to ask for <span class="it">the meeting</span>.</h1>
+      <p class="lede rv">The last section of a page is the only one with a job it can fail at.
+        Each of these puts the ask somewhere different &mdash; behind a door, inside a seal, on top
+        of a surface that answers back &mdash; while the button underneath stays the same button.</p>
+
+      <nav class="lab-tabs rv" style="margin-top:34px" aria-label="Component lab">
+        <a class="lab-tab" href="media.html"><i></i>Media</a>
+        <a class="lab-tab" href="cards.html"><i></i>Cards</a>
+        <a class="lab-tab" href="testimonials.html"><i></i>Testimonials</a>
+        <a class="lab-tab" href="cta.html" aria-current="page"><i></i>Call to action</a>
+        <a class="lab-tab" href="team.html"><i></i>Team</a>
+      </nav>
+
+      <div class="lab-figs rv">
+        <div class="lab-fig"><b>05</b><em>CTA components</em></div>
+        <div class="lab-fig"><b>02</b><em>Scrubbed reveals</em></div>
+        <div class="lab-fig"><b>01</b><em>Pointer-reactive field</em></div>
+        <div class="lab-fig"><b>AUD</b><em>$28k&ndash;$110k band</em></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ 01 — HIVE ============ -->
+  <section class="lab-sec" id="hive">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">CTA 01 &middot; Honeycomb hive</p>
+          <h2 class="display" data-split="rise">A surface that answers.</h2>
+        </div>
+        <div>
+          <p class="lede rv">The comb breathes on its own, brightens near the pointer, and carries
+            a ring outward from wherever you click &mdash; so it reads as one connected surface
+            rather than a grid of independent hovers. Click the field, not the button.</p>
+          <ul class="spec mono rv">
+            <li>Axial hex lattice</li><li>Proximity falloff</li>
+            <li>Propagating pulse</li><li>Eased per cell</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage hive-stage rv">
+        <canvas class="stage-bg" data-bg="hex" data-size="26" data-alpha="1.6" data-speed="1" aria-hidden="true"></canvas>
+        <span class="hive-cells" aria-hidden="true"></span>
+        <span class="tick tl" aria-hidden="true"></span><span class="tick tr" aria-hidden="true"></span>
+        <span class="tick bl" aria-hidden="true"></span><span class="tick br" aria-hidden="true"></span>
+
+        <div class="hive-plate">
+          <p class="mono eyebrow k">Start a project</p>
+          <h3>Tell us what it has to earn.</h3>
+          <p>A thirty-minute call, no deck. We will tell you whether the budget you have is the
+            budget the brief needs &mdash; and if it is not, which half to build first.</p>
+          <div class="hive-acts">
+            <a class="btn solid" href="https://cal.com/digitaltreasury/discovery?user=digitaltreasury" target="_blank" rel="noopener" data-mag
+               data-cal-link="digitaltreasury/discovery" data-cal-namespace="discovery" data-cal-config='{"layout":"month_view"}'><span class="btn-l">Book a meeting</span><span class="arw">&#8594;</span></a>
+            <a class="btn" href="mailto:dtclients@digitaltreasury.com.au" data-mag><span class="btn-l">Email us instead</span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-foot detached">
+        <span>Falloff radius <b>210px</b> &middot; pulse front <b>620px/s</b></span>
+        <span class="sep"></span>
+        <span>Click anywhere on the comb</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 — VAULT DOOR ============ -->
+  <section class="lab-sec" id="vault">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">CTA 02 &middot; Vault door</p>
+          <h2 class="display" data-split="rise">Opened on the scrollbar.</h2>
+        </div>
+        <div>
+          <p class="lede rv">Two engraved leaves that draw back as the section arrives, wheels
+            turning with them. Scrubbed rather than triggered, so scrolling back closes it &mdash;
+            and under reduced motion it is simply already open.</p>
+          <ul class="spec mono rv">
+            <li>Scroll-scrubbed</li><li>Reversible</li>
+            <li>Wheels geared to travel</li><li>Open by default under reduced motion</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage vd-stage rv" data-band data-ramp="0.72">
+        <canvas class="stage-bg" data-bg="moire" data-density="1.1" data-speed=".9" data-alpha="1.1" aria-hidden="true"></canvas>
+
+        <div class="vd">
+          <div class="vd-in">
+            <div>
+              <p class="mono eyebrow k">What is inside</p>
+              <h3>The whole team, not an account manager.</h3>
+              <p>Design, search and infrastructure in one room. The handover between them is the
+                month most agencies lose &mdash; and the reason we do not.</p>
+              <div class="hive-acts">
+                <a class="btn solid" href="https://cal.com/digitaltreasury/discovery?user=digitaltreasury" target="_blank" rel="noopener" data-mag
+                   data-cal-link="digitaltreasury/discovery" data-cal-namespace="discovery" data-cal-config='{"layout":"month_view"}'><span class="btn-l">Open a conversation</span><span class="arw">&#8594;</span></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="vd-leaf l" aria-hidden="true">
+            <span class="vd-riv"></span>
+            <span class="vd-wheel"><i></i><b></b><b></b><b></b><b></b><b></b><b></b></span>
+          </div>
+          <div class="vd-leaf r" aria-hidden="true">
+            <span class="vd-riv"></span>
+            <span class="vd-wheel"><i></i><b></b><b></b><b></b><b></b><b></b><b></b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-foot detached">
+        <span>Leaf travel <b>101%</b> &middot; wheels <b>220&deg;</b></span>
+        <span class="sep"></span>
+        <span>Scroll up to shut it again</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 — AURORA ============ -->
+  <section class="lab-sec" id="aurora">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">CTA 03 &middot; Aurora</p>
+          <h2 class="display" data-split="rise">Light, and a number.</h2>
+        </div>
+        <div>
+          <p class="lede rv">The only ground on these pages carried in CSS rather than on a canvas
+            &mdash; three blurred conic fields on long, offset loops, screened onto the dark and
+            multiplied onto paper so neither theme washes out.</p>
+          <ul class="spec mono rv">
+            <li>Three fields, 38&ndash;57s</li><li>Screen on dark, multiply on light</li>
+            <li>No canvas</li><li>Stops under reduced motion</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage aur-stage rv">
+        <span class="aur-field" aria-hidden="true">
+          <span class="aur-b"></span><span class="aur-b"></span><span class="aur-b"></span>
+        </span>
+
+        <div class="aur-plate">
+          <p class="mono eyebrow k">What search is worth</p>
+          <p class="aur-big">3&times;</p>
+          <h3>Organic growth, measured over a year.</h3>
+          <p>Not a promise &mdash; a median. Work out what that multiple is worth against your own
+            numbers before you talk to anyone, including us.</p>
+          <div class="aur-acts">
+            <a class="btn solid" href="index.html#instrument" data-mag><span class="btn-l">Run the numbers</span><span class="arw">&#8594;</span></a>
+            <a class="btn" href="https://cal.com/digitaltreasury/discovery?user=digitaltreasury" target="_blank" rel="noopener" data-mag
+               data-cal-link="digitaltreasury/discovery" data-cal-namespace="discovery" data-cal-config='{"layout":"month_view"}'><span class="btn-l">Book a meeting</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 — SEAL ============ -->
+  <section class="lab-sec" id="seal">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">CTA 04 &middot; Seal</p>
+          <h2 class="display" data-split="rise">Countersigned.</h2>
+        </div>
+        <div>
+          <p class="lede rv">A stamp that draws itself as the section arrives. Every stroked path
+            carries <code>pathLength="100"</code>, so the draw fraction is the scrub value itself
+            rather than a circumference somebody has to keep in step with the geometry.</p>
+          <ul class="spec mono rv">
+            <li>pathLength normalised</li><li>Three staggered strokes</li>
+            <li>Glow gated to 42%</li><li>Reversible</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage seal-stage rv" data-band data-ramp="0.68">
+        <canvas class="stage-bg" data-bg="contour" data-density=".9" data-speed=".7" data-alpha=".7" aria-hidden="true"></canvas>
+        <div class="stage-veil" aria-hidden="true"></div>
+
+        <div class="seal-in">
+          <figure class="seal" style="margin:0">
+            <span class="seal-glow" aria-hidden="true"></span>
+            <svg viewBox="0 0 220 220" role="img" aria-label="Digital Treasury seal">
+              <circle class="ring"  cx="110" cy="110" r="99" pathLength="100" transform="rotate(-90 110 110)"/>
+              <circle class="ring2" cx="110" cy="110" r="84" pathLength="100" transform="rotate(-90 110 110)"/>
+              <path class="star" pathLength="100" transform="rotate(-90 110 110)"
+                    d="M110 34 L127 96 L188 110 L127 124 L110 186 L93 124 L32 110 L93 96 Z"/>
+              <text class="tx" x="110" y="104" text-anchor="middle"
+                    style="font-family:'Bodoni Moda',Georgia,serif;font-size:30px;font-weight:600;letter-spacing:-1px">DT</text>
+              <text class="cap" x="110" y="130" text-anchor="middle">Est. 2015</text>
+            </svg>
+          </figure>
+
+          <div class="seal-t">
+            <p class="mono k">On the record</p>
+            <h3>Everything we quote, we sign.</h3>
+            <p>Fixed scope, fixed price, and a written brief that says what the site has to earn
+              before a wireframe exists. If we cannot hit it, we say so at the start rather than
+              at the invoice.</p>
+            <div class="seal-acts">
+              <a class="btn solid" href="https://cal.com/digitaltreasury/discovery?user=digitaltreasury" target="_blank" rel="noopener" data-mag
+                 data-cal-link="digitaltreasury/discovery" data-cal-namespace="discovery" data-cal-config='{"layout":"month_view"}'><span class="btn-l">Request a quote</span><span class="arw">&#8594;</span></a>
+              <a class="btn" href="index.html" data-mag><span class="btn-l">See the work</span></a>
+            </div>
+            <p class="seal-terms">
+              <span>Fixed price</span><span>Written scope</span><span>Melbourne based</span><span>No lock-in</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 — MARQUEE STAMP ============ -->
+  <section class="lab-sec" id="stamp" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">CTA 05 &middot; Marquee stamp</p>
+          <h2 class="display" data-split="rise">The loud one.</h2>
+        </div>
+        <div>
+          <p class="lede rv">A headline whose characters resolve out of noise on arrival, banded
+            top and bottom by a counter-running marquee. The real sentence is in the accessibility
+            tree the whole time &mdash; only the visible layer scrambles.</p>
+          <ul class="spec mono rv">
+            <li>Per-character resolve</li><li>Real text for screen readers</li>
+            <li>Counter-running bands</li><li>Runs once</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage flush tm-stage rv">
+      <canvas class="stage-bg" data-bg="streaks" data-density=".9" data-speed=".8" data-alpha=".9" aria-hidden="true"></canvas>
+      <div class="stage-veil" aria-hidden="true"></div>
+
+      <div class="tm-band" aria-hidden="true">
+        <div class="strip">
+          <span>Web design</span><span>Search</span><span>Platforms</span><span>Motion craft</span>
+          <span>Hosting</span><span>Melbourne</span><span>Since 2015</span><span>Fixed scope</span>
+        </div>
+      </div>
+
+      <div class="tm-in">
+        <h1 class="tm-h" data-scramble data-em="ready">Start when you are ready.</h1>
+        <p>Most of our work starts with a half-hour call and a blank page. Bring the numbers you
+          need the site to move; we will tell you what it takes to move them.</p>
+        <div class="tm-acts">
+          <a class="btn solid" href="https://cal.com/digitaltreasury/discovery?user=digitaltreasury" target="_blank" rel="noopener" data-mag
+             data-cal-link="digitaltreasury/discovery" data-cal-namespace="discovery" data-cal-config='{"layout":"month_view"}'><span class="btn-l">Book a meeting</span><span class="arw">&#8594;</span></a>
+          <a class="btn" href="mailto:dtclients@digitaltreasury.com.au" data-mag><span class="btn-l">dtclients@digitaltreasury.com.au</span></a>
+        </div>
+        <p class="tm-sub"><span>Melbourne, Australia</span><span>AUD, ex GST</span><span>Typically 6&ndash;12 weeks</span></p>
+      </div>
+
+      <div class="tm-band rev" aria-hidden="true">
+        <div class="strip">
+          <span>Awwwards target</span><span>Tier A craft</span><span>Webflow</span><span>Headless</span>
+          <span>Core Web Vitals</span><span>Reduced motion</span><span>Keyboard first</span><span>AA contrast</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lab-sec" id="next">
+    <div class="wrap" style="text-align:center">
+      <p class="mono eyebrow rv" style="justify-content:center">One more</p>
+      <h2 class="display rv" style="margin-bottom:26px">The people, in orbit.</h2>
+      <div class="rv" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a class="btn solid" href="team.html" data-mag><span class="btn-l">Team</span><span class="arw">&#8594;</span></a>
+        <a class="btn" href="media.html" data-mag><span class="btn-l">Back to media</span></a>
+      </div>
+    </div>
+  </section>
+
+</div></div>
+<div id="spacer" aria-hidden="true"></div>
+
+<script src="./dist/dt-lab-chrome.js" defer></script>
+<script src="./dist/dt-lab.js" defer></script>
+<script src="./dist/dt-craft.js" defer></script>
+</body>
+</html>

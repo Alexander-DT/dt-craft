@@ -20,12 +20,19 @@ dist/dt-craft.js               every system — expects the markup below
 dist/dt-craft.standalone.js    the same, plus the markup, self-injecting
 index.html                     the full demo page — the source of markup truth
 markup.reference.html          the DOM dt-craft.js expects        (generated)
-build.js                       regenerates the two generated files
+
+dist/dt-lab.css                the component lab's styling
+dist/dt-lab.js                 the component lab's behaviour
+dist/dt-lab-chrome.js          nav + palette + atmosphere + footer (generated)
+dist/dt-lab-<page>.js          one per lab page: chrome + markup   (generated)
+media|cards|testimonials|cta|team.html   the five lab pages
+
+build.js                       regenerates everything marked (generated)
 ```
 
-`index.html` and `dist/dt-craft.js` are edited by hand. `markup.reference.html`
-and `dist/dt-craft.standalone.js` are derived from them — after changing either,
-run:
+Hand-edited: `index.html`, the five lab pages, `dist/dt-craft.{css,js}` and
+`dist/dt-lab.{css,js}`. Everything else is derived — after changing any of
+them, run:
 
 ```
 node build.js
@@ -52,7 +59,7 @@ place while you rebuild sections natively one at a time.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.4.1/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.css">
 
 <!-- Theme, set before first paint. Must be inline and blocking: a reader who
      chose light otherwise gets a frame of dark on every navigation. -->
@@ -73,10 +80,10 @@ place while you rebuild sections natively one at a time.
 
 ```html
 <!-- blank page: injects its own markup -->
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.4.1/dist/dt-craft.standalone.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.standalone.js" defer></script>
 
 <!-- or, once the sections exist natively in Webflow -->
-<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.4.1/dist/dt-craft.js" defer></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.js" defer></script> -->
 ```
 
 > Pin the version tag. Never point at `@main` — a commit would silently change
@@ -190,6 +197,88 @@ arrival choreography attaches itself.
 | `data-depth` | parallax rate |
 | `data-dwell` | auto-advance interval on `#drow` |
 | `class="btn-l"` | label gets the re-type hover |
+
+---
+
+## The component lab
+
+Five pages of alternatives, so a direction can be chosen from something
+scrollable rather than from a description. Nineteen components in all:
+
+| Page | Components |
+|---|---|
+| `media.html` | orbital sphere carousel · cylinder carousel · MotionFlow rail · slice slider · scrubbed scroll gallery |
+| `cards.html` | highlight accordion · throw deck · bento morph · scroll stack · tilt grid |
+| `testimonials.html` | orbit · leaning marquee wall · spotlight rail · coverflow · ledger |
+| `cta.html` | honeycomb hive · vault door · aurora · drawn seal · marquee stamp |
+| `team.html` | orbit · roster with pointer-carried portrait · discipline helix |
+
+Everything resolves through the same tokens as the homepage, so both axes
+repaint the lab as well. Nothing here introduces a hue.
+
+### Grounds
+
+Each component sits on its own field, drawn by one engine in `dt-lab.js`.
+A canvas declares which field it is and how to run it:
+
+```html
+<canvas class="stage-bg" data-bg="hex" data-size="26" data-alpha="1.6"
+        data-speed="1" data-density="1" data-seed="7" aria-hidden="true"></canvas>
+```
+
+`data-bg` is one of `starfield`, `rings`, `streaks`, `scan`, `grid3d`, `hex`,
+`mesh`, `contour`, `dust`, `moire`, `ledger`. Each reads `--fx-rgb` **from its
+own host element**, so a field inside an inverted island keeps the bright
+accent while the page flips. Every one sleeps off-screen and when the tab
+hides, and paints a single static frame under `prefers-reduced-motion`.
+
+### The specimen plate
+
+`.gplate` is a guilloché rosette cut from four gradient passes — no raster and
+no request, and it re-inks on both axes because every stop is an accent token.
+`--pa` sets the engraving angle and `--pb` the radial pitch; unset, they are
+stamped from the element's index so no two on a page are cut the same way.
+
+### Using a lab page in Webflow
+
+Head:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-lab.css">
+```
+
+plus the same theme snippet the homepage uses. Before `</body>`, three tags —
+**in this order**:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-lab-media.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-lab.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.js" defer></script>
+```
+
+Swap `dt-lab-media.js` for `dt-lab-cards.js`, `-testimonials`, `-cta` or
+`-team`. Deferred scripts run in document order, so the markup exists before
+`dt-lab.js` looks for its components and before `dt-craft.js` looks for
+`#themeSw`. Reverse any two and the theme switch is dead.
+
+The bundles rewrite `media.html` to `/media` on the way through, so the `.html`
+files stay openable off disk while the hosted pages use real routes. The nav's
+lab links follow whichever shape the current URL has.
+
+### Two things worth knowing
+
+- **No `position: sticky` anywhere.** The smooth scroll is transform-based, so
+  `#vp` is a scrollport that never scrolls and a sticky child would simply ride
+  the transform. The scroll gallery and the card stack scrub their pin offset
+  instead, which behaves the same with the rig on or off.
+- **The vault door and the seal are authored open.** They only close behind the
+  `dt-lab` class, which `dt-lab.js` puts on `<html>` at boot — so if the craft
+  layer ever fails to load, the call to action is visible rather than shut
+  behind a door that will never open.
 
 ---
 

@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testimonials — Component Lab — Digital Treasury</title>
+<meta name="description" content="Five ways to make a testimonial section worth stopping for: an orbit, a leaning wall, a spotlight rail, a coverflow and a ledger.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="./dist/dt-craft.css">
+<link rel="stylesheet" href="./dist/dt-lab.css">
+<script>
+(function(){try{
+  var r=document.documentElement,t=localStorage.getItem('dt-theme'),a=localStorage.getItem('dt-accent');
+  if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  r.setAttribute('data-theme',t);
+  r.setAttribute('data-accent',/^(gold|amber|azure|verdant|crimson|violet)$/.test(a)?a:'gold');
+}catch(e){}})();
+</script>
+</head>
+<body>
+
+<div id="vp"><div id="scroller">
+
+  <header class="lab-hero">
+    <div class="wrap">
+      <p class="mono eyebrow rv">Component lab &middot; 03 &nbsp;/&nbsp; Testimonials</p>
+      <h1 class="rv">The section everybody <span class="it">skips</span>.</h1>
+      <p class="lede rv">A row of three cards with five stars each is wallpaper. These five treat a
+        quote as something with a place, a weight and an order &mdash; so a reader has a reason to
+        stop at one rather than scroll past all of them.</p>
+      <p class="mono rv" style="color:var(--paper-3);margin-top:18px;text-transform:none;letter-spacing:.06em;font-size:.66rem">
+        Four of the quotes below are the real ones from the live site. The rest are marked
+        <b style="color:var(--gold)">Specimen</b> &mdash; placeholder copy standing in for volume,
+        not attributed to anyone.
+      </p>
+
+      <nav class="lab-tabs rv" style="margin-top:34px" aria-label="Component lab">
+        <a class="lab-tab" href="media.html"><i></i>Media</a>
+        <a class="lab-tab" href="cards.html"><i></i>Cards</a>
+        <a class="lab-tab" href="testimonials.html" aria-current="page"><i></i>Testimonials</a>
+        <a class="lab-tab" href="cta.html"><i></i>Call to action</a>
+        <a class="lab-tab" href="team.html"><i></i>Team</a>
+      </nav>
+
+      <div class="lab-figs rv">
+        <div class="lab-fig"><b>05</b><em>Quote components</em></div>
+        <div class="lab-fig"><b>04</b><em>Real client quotes</em></div>
+        <div class="lab-fig"><b>5.0</b><em>Google rating</em></div>
+        <div class="lab-fig"><b>11yr</b><em>Melbourne, AU</em></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ 01 — ORBIT ============ -->
+  <section class="lab-sec" id="orbit">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">Testimonials 01 &middot; Orbit</p>
+          <h2 class="display" data-split="rise">The one at the top is the one you read.</h2>
+        </div>
+        <div>
+          <p class="lede rv">The clients circle a fixed centre. Selecting any of them rotates the
+            whole ring to bring that one to the top rather than swapping the quote underneath
+            &mdash; so the reader can see where they are in the set at all times.</p>
+          <ul class="spec mono rv">
+            <li>Ring rotates, avatars counter-rotate</li><li>Second ring, slow</li>
+            <li>Arrow keys</li><li>Auto-advance until touched</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage oq-stage rv">
+        <canvas class="stage-bg" data-bg="rings" data-speed=".55" data-alpha=".8" aria-hidden="true"></canvas>
+        <span class="tick tl" aria-hidden="true"></span><span class="tick tr" aria-hidden="true"></span>
+        <span class="tick bl" aria-hidden="true"></span><span class="tick br" aria-hidden="true"></span>
+        <div class="stage-veil" aria-hidden="true"></div>
+
+        <div class="oq">
+          <span class="oq-ring r2" aria-hidden="true"></span>
+          <div class="oq-ring" role="tablist" aria-label="Clients">
+            <button type="button" class="oq-a" data-who="Meghann Cannon" data-role="KIT Legal &middot; Sydney" data-quote="The team at Digital Treasury supporting our website gives us peace of mind. They are super responsive and knowledgeable and we are happy to recommend their services.">MC<i aria-hidden="true"></i></button>
+            <button type="button" class="oq-a" data-who="Glenys Coull" data-role="Melbourne Foot Clinic &middot; VIC" data-quote="Together, we worked through our SEO and website over a period of weeks &mdash; the results are evident in our new patient numbers.">GC<i aria-hidden="true"></i></button>
+            <button type="button" class="oq-a" data-who="Kym Fabris" data-role="Melbourne Woodworking Courses &middot; VIC" data-quote="We are so happy with the website built for our new business. It looks great, and it took just a couple of weeks for us to rank really well in Google.">KF<i aria-hidden="true"></i></button>
+            <button type="button" class="oq-a" data-who="Operations Lead" data-role="RTOPilot &middot; National" data-quote="They rebuilt the whole platform and still shipped on time. The difference in enquiry volume was obvious inside the first quarter.">OL<i aria-hidden="true"></i></button>
+            <button type="button" class="oq-a" data-who="Specimen" data-role="Placeholder copy &middot; not attributed" data-quote="Specimen copy, standing in for a fifth quote so the ring reads at a realistic density. Replace before anything goes live.">S5<i aria-hidden="true"></i></button>
+            <button type="button" class="oq-a" data-who="Specimen" data-role="Placeholder copy &middot; not attributed" data-quote="Specimen copy. Six is where the ring starts to feel populated without the avatars crowding each other at this diameter.">S6<i aria-hidden="true"></i></button>
+            <button type="button" class="oq-a" data-who="Specimen" data-role="Placeholder copy &middot; not attributed" data-quote="Specimen copy. The component takes any count &mdash; the step is three hundred and sixty over the number of avatars.">S7<i aria-hidden="true"></i></button>
+          </div>
+          <div class="oq-core"><span class="swap"></span></div>
+        </div>
+      </div>
+
+      <div class="stage-foot detached">
+        <span>Seven on the ring &middot; step <b>51.4&deg;</b></span>
+        <span class="sep"></span>
+        <span>Settle <b>1.05s</b>, overdamped &mdash; nothing bounces</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 — MARQUEE WALL ============ -->
+  <section class="lab-sec" id="wall">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">Testimonials 02 &middot; Leaning wall</p>
+          <h2 class="display" data-split="rise">Volume, without a list.</h2>
+        </div>
+        <div>
+          <p class="lede rv">Three columns leaning back into the page, running against each other
+            so the wall never reads as one block sliding. Hover anywhere and the whole thing stops;
+            hover a card and it steps thirty-eight pixels towards you.</p>
+          <ul class="spec mono rv">
+            <li>3D lean</li><li>Counter-running columns</li>
+            <li>Pause on hover</li><li>Card lifts on Z</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage wall-stage rv">
+        <canvas class="stage-bg" data-bg="grid3d" data-speed=".7" data-alpha=".55" aria-hidden="true"></canvas>
+
+        <div class="wall">
+          <div class="wall-in">
+            <div class="wall-col"><div class="strip">
+              <article class="wq"><div class="wq-top"><span class="wq-med">MC</span><span><b>Meghann Cannon</b><em>KIT Legal &middot; Sydney</em></span></div><p>The team at Digital Treasury supporting our website gives us peace of mind. They are super responsive and knowledgeable and we are happy to recommend their services.</p><i class="bandv" aria-hidden="true"></i></article>
+              <article class="wq"><div class="wq-top"><span class="wq-med">S1</span><span><b>Specimen</b><em>Placeholder copy</em></span></div><p>Specimen copy. A column needs four or five cards before the loop stops looking like a loop.</p><i class="bandv" aria-hidden="true"></i></article>
+              <article class="wq"><div class="wq-top"><span class="wq-med">OL</span><span><b>Operations Lead</b><em>RTOPilot &middot; National</em></span></div><p>They rebuilt the whole platform and still shipped on time. The difference in enquiry volume was obvious inside the first quarter.</p><i class="bandv" aria-hidden="true"></i></article>
+              <article class="wq"><div class="wq-top"><span class="wq-med">S2</span><span><b>Specimen</b><em>Placeholder copy</em></span></div><p>Specimen copy. Cards vary in length on purpose &mdash; a wall of identical heights reads as a template.</p><i class="bandv" aria-hidden="true"></i></article>
+            </div></div>
+
+            <div class="wall-col"><div class="strip">
+              <article class="wq"><div class="wq-top"><span class="wq-med">GC</span><span><b>Glenys Coull</b><em>Melbourne Foot Clinic &middot; VIC</em></span></div><p>Together, we worked through our SEO and website over a period of weeks &mdash; the results are evident in our new patient numbers.</p><i class="bandv" aria-hidden="true"></i></article>
+              <article class="wq"><div class="wq-top"><span class="wq-med">S3</span><span><b>Specimen</b><em>Placeholder copy</em></span></div><p>Specimen copy. The middle column runs in reverse at a different duration, which is what stops the three from beating in unison.</p><i class="bandv" aria-hidden="true"></i></article>
+              <article class="wq"><div class="wq-top"><span class="wq-med">KF</span><span><b>Kym Fabris</b><em>Melbourne Woodworking Courses &middot; VIC</em></span></div><p>We are so happy with the website built for our new business. It looks great, and it took just a couple of weeks for us to rank really well in Google.</p><i class="bandv" aria-hidden="true"></i></article>
+              <article class="wq"><div class="wq-top"><span class="wq-med">S4</span><span><b>Specimen</b><em>Placeholder copy</em></span></div><p>Specimen copy.</p><i class="bandv" aria-hidden="true"></i></article>
+            </div></div>
+
+            <div class="wall-col"><div class="strip">
+              <article class="wq"><div class="wq-top"><span class="wq-med">S5</span><span><b>Specimen</b><em>Placeholder copy</em></span></div><p>Specimen copy. Every card in this column is a stand-in; swap them for real quotes before publish.</p><i class="bandv" aria-hidden="true"></i></article>
+              <article class="wq"><div class="wq-top"><span class="wq-med">MC</span><span><b>Meghann Cannon</b><em>KIT Legal &middot; Sydney</em></span></div><p>Super responsive and knowledgeable. Happy to recommend their services.</p><i class="bandv" aria-hidden="true"></i></article>
+              <article class="wq"><div class="wq-top"><span class="wq-med">S6</span><span><b>Specimen</b><em>Placeholder copy</em></span></div><p>Specimen copy. The strip is duplicated in JS so the minus-fifty-per-cent loop has something to run into.</p><i class="bandv" aria-hidden="true"></i></article>
+              <article class="wq"><div class="wq-top"><span class="wq-med">S7</span><span><b>Specimen</b><em>Placeholder copy</em></span></div><p>Specimen copy.</p><i class="bandv" aria-hidden="true"></i></article>
+            </div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-foot detached">
+        <span>Lean <b>11&deg; / -13&deg; / 4&deg;</b></span>
+        <span class="sep"></span>
+        <span>Loops <b>46s &middot; 58s &middot; 52s</b> &mdash; nothing in unison</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 — SPOTLIGHT RAIL ============ -->
+  <section class="lab-sec" id="spotlight">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">Testimonials 03 &middot; Spotlight rail</p>
+          <h2 class="display" data-split="rise">One at full size.</h2>
+        </div>
+        <div>
+          <p class="lede rv">The quiet one, and the one that reads best on a phone. A single quote
+            at display size with the roster laid out as a filmstrip beneath it &mdash; the strip
+            scrolls itself so the active name stays in view.</p>
+          <ul class="spec mono rv">
+            <li>Tablist semantics</li><li>Roving tabindex</li>
+            <li>Strip auto-centres</li><li>Figures per client</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage rv">
+        <canvas class="stage-bg" data-bg="dust" data-density=".9" data-speed=".8" aria-hidden="true"></canvas>
+        <div class="stage-veil" aria-hidden="true"></div>
+
+        <div class="spot">
+          <div class="spot-main">
+            <figure class="spot-shot" style="margin:0"></figure>
+            <div class="spot-q"><span class="swap"></span></div>
+          </div>
+          <div class="spot-strip" role="tablist" aria-label="Clients">
+            <button type="button" class="spot-n"
+              data-who="Meghann Cannon" data-role="KIT Legal &middot; Sydney" data-badge="Legal &middot; NSW"
+              data-figs="5.0~Google rating|4yr~Under care"
+              data-quote="The team at Digital Treasury supporting our website gives us peace of mind. They are super responsive and knowledgeable and we are happy to recommend their services.">KIT Legal</button>
+            <button type="button" class="spot-n"
+              data-who="Glenys Coull" data-role="Melbourne Foot Clinic &middot; VIC" data-badge="Healthcare &middot; VIC"
+              data-figs="&uarr;~New patients|Wks~To result"
+              data-quote="Together, we worked through our SEO and website over a period of weeks &mdash; the results are evident in our new patient numbers.">Melbourne Foot Clinic</button>
+            <button type="button" class="spot-n"
+              data-who="Kym Fabris" data-role="Melbourne Woodworking Courses &middot; VIC" data-badge="Education &middot; VIC"
+              data-figs="2wk~To page one|New~Business"
+              data-quote="We are so happy with the website built for our new business. It looks great, and it took just a couple of weeks for us to rank really well in Google.">Woodworking Courses</button>
+            <button type="button" class="spot-n"
+              data-img="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca6cd29941ed286c5f380b_RTO%20Pilot-p-800.png"
+              data-who="Operations Lead" data-role="RTOPilot &middot; National" data-badge="SaaS &middot; National"
+              data-figs="Q1~To impact|On~Time"
+              data-quote="They rebuilt the whole platform and still shipped on time. The difference in enquiry volume was obvious inside the first quarter.">RTOPilot</button>
+            <button type="button" class="spot-n"
+              data-img="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca5149dc641e09321517c1_EHG-p-800.png"
+              data-who="Specimen" data-role="Placeholder copy &middot; not attributed" data-badge="Specimen"
+              data-figs="00~Placeholder|00~Placeholder"
+              data-quote="Specimen copy, standing in so the filmstrip has enough entries to need scrolling. Replace before anything goes live.">Specimen 05</button>
+            <button type="button" class="spot-n"
+              data-who="Specimen" data-role="Placeholder copy &middot; not attributed" data-badge="Specimen"
+              data-figs="00~Placeholder|00~Placeholder"
+              data-quote="Specimen copy. The portrait falls back to a guilloché plate whenever a client has no photograph, which is most of them.">Specimen 06</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 — COVERFLOW ============ -->
+  <section class="lab-sec" id="coverflow">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">Testimonials 04 &middot; Coverflow</p>
+          <h2 class="display" data-split="rise">Reading position as a place.</h2>
+        </div>
+        <div>
+          <p class="lede rv">Cards to either side turn away from the reader and dim with distance,
+            so there is one obvious place to be looking and a visible sense of how much is left in
+            either direction.</p>
+          <ul class="spec mono rv">
+            <li>Turn &plusmn;46&deg;</li><li>Depth by distance</li>
+            <li>Drag steps</li><li>Focus recentres</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage cf-stage rv">
+        <canvas class="stage-bg" data-bg="moire" data-density=".8" data-speed=".6" data-alpha=".7" aria-hidden="true"></canvas>
+        <div class="stage-veil" aria-hidden="true"></div>
+
+        <div class="cf" role="group" aria-label="Client quotes">
+          <div class="cf-mirror" aria-hidden="true"></div>
+          <div class="cf-space">
+            <article class="cf-c"><span class="mark" aria-hidden="true">&ldquo;</span><blockquote>The team at Digital Treasury supporting our website gives us peace of mind. Super responsive and knowledgeable.</blockquote><div class="foot"><span class="cf-med">MC</span><span><b>Meghann Cannon</b><em>KIT Legal</em></span></div></article>
+            <article class="cf-c"><span class="mark" aria-hidden="true">&ldquo;</span><blockquote>Together, we worked through our SEO and website over a period of weeks &mdash; the results are evident in our new patient numbers.</blockquote><div class="foot"><span class="cf-med">GC</span><span><b>Glenys Coull</b><em>Melbourne Foot Clinic</em></span></div></article>
+            <article class="cf-c"><span class="mark" aria-hidden="true">&ldquo;</span><blockquote>We are so happy with the website built for our new business. It took just a couple of weeks for us to rank really well in Google.</blockquote><div class="foot"><span class="cf-med">KF</span><span><b>Kym Fabris</b><em>Woodworking Courses</em></span></div></article>
+            <article class="cf-c"><span class="mark" aria-hidden="true">&ldquo;</span><blockquote>They rebuilt the whole platform and still shipped on time. The difference in enquiry volume was obvious inside the first quarter.</blockquote><div class="foot"><span class="cf-med">OL</span><span><b>Operations Lead</b><em>RTOPilot</em></span></div></article>
+            <article class="cf-c"><span class="mark" aria-hidden="true">&ldquo;</span><blockquote>Specimen copy, standing in so the flow has enough cards to show depth in both directions.</blockquote><div class="foot"><span class="cf-med">S5</span><span><b>Specimen</b><em>Placeholder</em></span></div></article>
+            <article class="cf-c"><span class="mark" aria-hidden="true">&ldquo;</span><blockquote>Specimen copy. Anything more than three cards from the centre is faded out entirely rather than stacked forever.</blockquote><div class="foot"><span class="cf-med">S6</span><span><b>Specimen</b><em>Placeholder</em></span></div></article>
+            <article class="cf-c"><span class="mark" aria-hidden="true">&ldquo;</span><blockquote>Specimen copy. Seven is enough to see the falloff without the component becoming the page.</blockquote><div class="foot"><span class="cf-med">S7</span><span><b>Specimen</b><em>Placeholder</em></span></div></article>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-foot detached">
+        <div class="grp">
+          <button type="button" class="cbtn" data-cf="prev" aria-label="Previous quote">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 3 5 8l5 5"/></svg>
+          </button>
+          <button type="button" class="cbtn" data-cf="next" aria-label="Next quote">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 3l5 5-5 5"/></svg>
+          </button>
+        </div>
+        <span class="cprog" aria-hidden="true"><i></i></span>
+        <span data-cf-label aria-live="polite">01 / 07</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 — LEDGER ============ -->
+  <section class="lab-sec" id="ledger">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">Testimonials 05 &middot; Ledger</p>
+          <h2 class="display" data-split="rise">Ruled, numbered, entered.</h2>
+        </div>
+        <div>
+          <p class="lede rv">The plainest of the five and the one that survives a print stylesheet.
+            A row opens in place using <code>grid-template-rows: 0fr &rarr; 1fr</code>, so it opens
+            to its real height without anybody measuring it first.</p>
+          <ul class="spec mono rv">
+            <li>0fr &rarr; 1fr</li><li>No measured heights</li>
+            <li>One open at a time</li><li>aria-expanded</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage rv">
+        <canvas class="stage-bg" data-bg="ledger" data-density="1" data-speed="1" aria-hidden="true"></canvas>
+        <div class="stage-veil" aria-hidden="true"></div>
+
+        <div class="ledg">
+          <div class="ledg-r on">
+            <button type="button" class="ledg-h">
+              <span class="ledg-n">01</span>
+              <span class="ledg-t">KIT Legal &mdash; peace of mind</span>
+              <span class="ledg-x" aria-hidden="true"><i></i><i></i></span>
+            </button>
+            <div class="ledg-b"><div><div class="ledg-in">
+              <blockquote>The team at Digital Treasury supporting our website gives us peace of mind.
+                They are super responsive and knowledgeable and we are happy to recommend their services.</blockquote>
+              <div class="ledg-meta">
+                <span class="who"><span class="wq-med">MC</span><span><b>Meghann Cannon</b><em>KIT Legal &middot; Sydney</em></span></span>
+                <span class="fig"><b>5.0</b><em>Google rating</em></span>
+              </div>
+            </div></div></div>
+          </div>
+
+          <div class="ledg-r">
+            <button type="button" class="ledg-h">
+              <span class="ledg-n">02</span>
+              <span class="ledg-t">Melbourne Foot Clinic &mdash; new patient numbers</span>
+              <span class="ledg-x" aria-hidden="true"><i></i><i></i></span>
+            </button>
+            <div class="ledg-b"><div><div class="ledg-in">
+              <blockquote>Together, we worked through our SEO and website over a period of weeks
+                &mdash; the results are evident in our new patient numbers.</blockquote>
+              <div class="ledg-meta">
+                <span class="who"><span class="wq-med">GC</span><span><b>Glenys Coull</b><em>Melbourne Foot Clinic &middot; VIC</em></span></span>
+                <span class="fig"><b>Wks</b><em>To result</em></span>
+              </div>
+            </div></div></div>
+          </div>
+
+          <div class="ledg-r">
+            <button type="button" class="ledg-h">
+              <span class="ledg-n">03</span>
+              <span class="ledg-t">Melbourne Woodworking Courses &mdash; page one in a fortnight</span>
+              <span class="ledg-x" aria-hidden="true"><i></i><i></i></span>
+            </button>
+            <div class="ledg-b"><div><div class="ledg-in">
+              <blockquote>We are so happy with the website built for our new business. It looks
+                great, and it took just a couple of weeks for us to rank really well in Google.</blockquote>
+              <div class="ledg-meta">
+                <span class="who"><span class="wq-med">KF</span><span><b>Kym Fabris</b><em>Melbourne Woodworking Courses &middot; VIC</em></span></span>
+                <span class="fig"><b>2wk</b><em>To page one</em></span>
+              </div>
+            </div></div></div>
+          </div>
+
+          <div class="ledg-r">
+            <button type="button" class="ledg-h">
+              <span class="ledg-n">04</span>
+              <span class="ledg-t">RTOPilot &mdash; rebuilt, and still on time</span>
+              <span class="ledg-x" aria-hidden="true"><i></i><i></i></span>
+            </button>
+            <div class="ledg-b"><div><div class="ledg-in">
+              <blockquote>They rebuilt the whole platform and still shipped on time. The difference
+                in enquiry volume was obvious inside the first quarter.</blockquote>
+              <div class="ledg-meta">
+                <span class="who"><span class="wq-med">OL</span><span><b>Operations Lead</b><em>RTOPilot &middot; National</em></span></span>
+                <span class="fig"><b>Q1</b><em>To impact</em></span>
+              </div>
+            </div></div></div>
+          </div>
+
+          <div class="ledg-r">
+            <button type="button" class="ledg-h">
+              <span class="ledg-n">05</span>
+              <span class="ledg-t">Specimen entry &mdash; placeholder copy</span>
+              <span class="ledg-x" aria-hidden="true"><i></i><i></i></span>
+            </button>
+            <div class="ledg-b"><div><div class="ledg-in">
+              <blockquote>Specimen copy, standing in so the ledger has an odd number of rows and the
+                ruling reads correctly. Not attributed to anyone &mdash; replace before publish.</blockquote>
+              <div class="ledg-meta">
+                <span class="who"><span class="wq-med">S5</span><span><b>Specimen</b><em>Placeholder</em></span></span>
+                <span class="fig"><b>00</b><em>Placeholder</em></span>
+              </div>
+            </div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lab-sec" id="next">
+    <div class="wrap" style="text-align:center">
+      <p class="mono eyebrow rv" style="justify-content:center">Keep going</p>
+      <h2 class="display rv" style="margin-bottom:26px">Five ways to ask for the meeting.</h2>
+      <p class="lede rv" style="margin:0 auto 32px">Including a honeycomb that carries a pulse
+        outward from wherever you click, and a vault door that opens on the scrollbar.</p>
+      <div class="rv" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a class="btn solid" href="cta.html" data-mag><span class="btn-l">Call to action</span><span class="arw">&#8594;</span></a>
+        <a class="btn" href="team.html" data-mag><span class="btn-l">Team</span></a>
+      </div>
+    </div>
+  </section>
+
+</div></div>
+<div id="spacer" aria-hidden="true"></div>
+
+<script src="./dist/dt-lab-chrome.js" defer></script>
+<script src="./dist/dt-lab.js" defer></script>
+<script src="./dist/dt-craft.js" defer></script>
+</body>
+</html>

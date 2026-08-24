@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team — Component Lab — Digital Treasury</title>
+<meta name="description" content="Three ways to introduce a team: an orbit with a focused centre, a ruled roster with the portrait on the pointer, and a helix of disciplines.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="./dist/dt-craft.css">
+<link rel="stylesheet" href="./dist/dt-lab.css">
+<script>
+(function(){try{
+  var r=document.documentElement,t=localStorage.getItem('dt-theme'),a=localStorage.getItem('dt-accent');
+  if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  r.setAttribute('data-theme',t);
+  r.setAttribute('data-accent',/^(gold|amber|azure|verdant|crimson|violet)$/.test(a)?a:'gold');
+}catch(e){}})();
+</script>
+</head>
+<body>
+
+<div id="vp"><div id="scroller">
+
+  <header class="lab-hero">
+    <div class="wrap">
+      <p class="mono eyebrow rv">Component lab &middot; 05 &nbsp;/&nbsp; Team</p>
+      <h1 class="rv">The people, <span class="it">in orbit</span>.</h1>
+      <p class="lede rv">Three ways to introduce a team without a grid of headshots on a white
+        background. Every entry below is a <b style="color:var(--gold);font-weight:500">role</b>
+        rather than a person, and every portrait is an engraved plate &mdash; placeholders, until
+        real photography exists.</p>
+
+      <nav class="lab-tabs rv" style="margin-top:34px" aria-label="Component lab">
+        <a class="lab-tab" href="media.html"><i></i>Media</a>
+        <a class="lab-tab" href="cards.html"><i></i>Cards</a>
+        <a class="lab-tab" href="testimonials.html"><i></i>Testimonials</a>
+        <a class="lab-tab" href="cta.html"><i></i>Call to action</a>
+        <a class="lab-tab" href="team.html" aria-current="page"><i></i>Team</a>
+      </nav>
+
+      <div class="lab-figs rv">
+        <div class="lab-fig"><b>03</b><em>Team components</em></div>
+        <div class="lab-fig"><b>08</b><em>Roles on the ring</em></div>
+        <div class="lab-fig"><b>11yr</b><em>Melbourne, AU</em></div>
+        <div class="lab-fig"><b>03</b><em>Disciplines in-house</em></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ 01 — ORBIT TEAM ============ -->
+  <section class="lab-sec" id="orbit">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">Team 01 &middot; Orbit</p>
+          <h2 class="display" data-split="rise">Everybody, and one of them.</h2>
+        </div>
+        <div>
+          <p class="lede rv">Two rings, the outer one dashed and slow. Choosing a role rotates the
+            ring to bring that plate to the top and fills the centre &mdash; so the team is never
+            reduced to the one person you happen to be reading about.</p>
+          <ul class="spec mono rv">
+            <li>Ring rotates, plates counter-rotate</li><li>Centre follows selection</li>
+            <li>Arrow keys</li><li>Auto-advance until touched</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage ot-stage rv">
+        <canvas class="stage-bg" data-bg="starfield" data-density=".8" data-speed=".7" data-alpha=".85" data-seed="43" aria-hidden="true"></canvas>
+        <span class="tick tl" aria-hidden="true"></span><span class="tick tr" aria-hidden="true"></span>
+        <span class="tick bl" aria-hidden="true"></span><span class="tick br" aria-hidden="true"></span>
+        <div class="stage-veil" aria-hidden="true"></div>
+
+        <div class="ot">
+          <span class="ot-ring dash" aria-hidden="true"></span>
+          <div class="ot-ring" role="tablist" aria-label="Team roles">
+            <button type="button" class="ot-m" data-name="Founder &amp; Director" data-role="Strategy &middot; Since 2015" data-bio="Sets the brief with the client, and stays on the account. Every project has one.">
+              <span class="gplate" style="--pa:14;--pb:2"></span><em>Director</em></button>
+            <button type="button" class="ot-m" data-name="Design Lead" data-role="Art direction &middot; UI" data-bio="Owns the visual system end to end &mdash; tokens, type scale, motion vocabulary.">
+              <span class="gplate" style="--pa:59;--pb:5"></span><em>Design</em></button>
+            <button type="button" class="ot-m" data-name="Lead Developer" data-role="Build &middot; Webflow &amp; headless" data-bio="Decides which of the two platforms a brief actually needs, and is accountable for the answer.">
+              <span class="gplate" style="--pa:104;--pb:8"></span><em>Build</em></button>
+            <button type="button" class="ot-m" data-name="Motion Developer" data-role="Craft layer &middot; WebGL" data-bio="The scroll rig, the shaders, the choreography. The layer that moves the price band.">
+              <span class="gplate" style="--pa:149;--pb:3"></span><em>Motion</em></button>
+            <button type="button" class="ot-m" data-name="SEO Lead" data-role="Technical &middot; Content &middot; Authority" data-bio="In the room at wireframe, not after launch. Ranking structure is an architecture decision.">
+              <span class="gplate" style="--pa:194;--pb:6"></span><em>Search</em></button>
+            <button type="button" class="ot-m" data-name="Content Strategist" data-role="Briefs &middot; Copy" data-bio="Writes from real SERP analysis rather than a keyword list, and edits what the client sends back.">
+              <span class="gplate" style="--pa:239;--pb:9"></span><em>Content</em></button>
+            <button type="button" class="ot-m" data-name="Platforms Engineer" data-role="Portals &middot; Automation" data-bio="Where a build stops being a website: auth, dashboards, payments, the workflows behind them.">
+              <span class="gplate" style="--pa:284;--pb:4"></span><em>Platforms</em></button>
+            <button type="button" class="ot-m" data-name="Client Care" data-role="Hosting &middot; Monitoring" data-bio="Most of what this role fixes, clients never hear about. That is the measure of it.">
+              <span class="gplate" style="--pa:329;--pb:7"></span><em>Care</em></button>
+          </div>
+          <div class="ot-core"><span class="swap"></span></div>
+        </div>
+      </div>
+
+      <div class="stage-foot detached">
+        <span>Eight on the ring &middot; step <b>45&deg;</b></span>
+        <span class="sep"></span>
+        <span>Outer ring <b>90s</b>, continuous</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 — ROSTER ============ -->
+  <section class="lab-sec" id="roster">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">Team 02 &middot; Roster</p>
+          <h2 class="display" data-split="rise">The portrait rides the pointer.</h2>
+        </div>
+        <div>
+          <p class="lede rv">A ruled list that stays a list. The portrait is a single fixed-position
+            element outside the scroll rig, lerped towards the cursor &mdash; one node moving rather
+            than eight images fading. It is off entirely on touch, where there is no pointer to
+            follow.</p>
+          <ul class="spec mono rv">
+            <li>One shared portrait node</li><li>Outside the scroll transform</li>
+            <li>Lerped follow</li><li>Off on touch and reduced motion</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage rv">
+        <canvas class="stage-bg" data-bg="ledger" data-density=".8" data-speed=".9" data-alpha=".8" aria-hidden="true"></canvas>
+        <div class="stage-veil" aria-hidden="true"></div>
+
+        <div class="rost">
+          <div class="rost-r"><span class="rost-n">01</span><span class="rost-name">Founder &amp; Director</span><span class="rost-role">Strategy</span><span class="rost-yr">2015</span></div>
+          <div class="rost-r"><span class="rost-n">02</span><span class="rost-name">Design Lead</span><span class="rost-role">Art direction &middot; UI</span><span class="rost-yr">2017</span></div>
+          <div class="rost-r"><span class="rost-n">03</span><span class="rost-name">Lead Developer</span><span class="rost-role">Webflow &middot; headless</span><span class="rost-yr">2018</span></div>
+          <div class="rost-r" data-img="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/67ca6cd29941ed286c5f380b_RTO%20Pilot-p-500.png"><span class="rost-n">04</span><span class="rost-name">Motion Developer</span><span class="rost-role">Craft layer &middot; WebGL</span><span class="rost-yr">2021</span></div>
+          <div class="rost-r"><span class="rost-n">05</span><span class="rost-name">SEO Lead</span><span class="rost-role">Technical &middot; Authority</span><span class="rost-yr">2016</span></div>
+          <div class="rost-r"><span class="rost-n">06</span><span class="rost-name">Content Strategist</span><span class="rost-role">Briefs &middot; Copy</span><span class="rost-yr">2019</span></div>
+          <div class="rost-r" data-img="https://cdn.prod.website-files.com/662b4731a3ded1e03b5c4ba8/682d8ca0f216d25240398269_Airpin%20(1)-p-500.png"><span class="rost-n">07</span><span class="rost-name">Platforms Engineer</span><span class="rost-role">Portals &middot; Automation</span><span class="rost-yr">2020</span></div>
+          <div class="rost-r"><span class="rost-n">08</span><span class="rost-name">Client Care</span><span class="rost-role">Hosting &middot; Monitoring</span><span class="rost-yr">2022</span></div>
+        </div>
+      </div>
+
+      <div class="stage-foot detached">
+        <span>Follow lerp <b>0.14</b> &middot; offset <b>+130px</b></span>
+        <span class="sep"></span>
+        <span>Rows indent <b>on hover</b>, not on load</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 — HELIX ============ -->
+  <section class="lab-sec" id="helix">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">Team 03 &middot; Discipline helix</p>
+          <h2 class="display" data-split="rise">The roster as an object.</h2>
+        </div>
+        <div>
+          <p class="lede rv">Angle from the index, height from the same index, so the column reads
+            as one continuous thread rather than a stack of plates. The whole screw turns three
+            hundred degrees across the section &mdash; driven by the same scrub the rest of the
+            lab uses.</p>
+          <ul class="spec mono rv">
+            <li>Two turns</li><li>Radius from container width</li>
+            <li>Scroll-scrubbed rotation</li><li>Fixed angle under reduced motion</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage helix-stage rv" data-band data-ramp="0.85">
+        <canvas class="stage-bg" data-bg="mesh" data-density=".9" data-speed=".8" data-alpha=".8" aria-hidden="true"></canvas>
+        <div class="stage-veil" aria-hidden="true"></div>
+
+        <div class="helix">
+          <span class="helix-axis" aria-hidden="true"></span>
+          <div class="helix-sp" data-turns="2">
+            <div class="helix-p"><b>01</b><span>Strategy</span><em>Director</em></div>
+            <div class="helix-p"><b>02</b><span>Art direction</span><em>Design</em></div>
+            <div class="helix-p"><b>03</b><span>UI system</span><em>Design</em></div>
+            <div class="helix-p"><b>04</b><span>Front end</span><em>Build</em></div>
+            <div class="helix-p"><b>05</b><span>Craft layer</span><em>Motion</em></div>
+            <div class="helix-p"><b>06</b><span>Shaders</span><em>Motion</em></div>
+            <div class="helix-p"><b>07</b><span>Technical SEO</span><em>Search</em></div>
+            <div class="helix-p"><b>08</b><span>Content</span><em>Search</em></div>
+            <div class="helix-p"><b>09</b><span>Authority</span><em>Search</em></div>
+            <div class="helix-p"><b>10</b><span>Portals</span><em>Platforms</em></div>
+            <div class="helix-p"><b>11</b><span>Automation</span><em>Platforms</em></div>
+            <div class="helix-p"><b>12</b><span>Hosting &amp; care</span><em>Care</em></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-foot detached">
+        <span>Twelve plates &middot; two turns</span>
+        <span class="sep"></span>
+        <span>Rotation <b>300&deg;</b> across the section</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="lab-sec" id="next">
+    <div class="wrap" style="text-align:center">
+      <p class="mono eyebrow rv" style="justify-content:center">That is the lab</p>
+      <h2 class="display rv" style="margin-bottom:26px">Nineteen components, one token set.</h2>
+      <p class="lede rv" style="margin:0 auto 32px">Every one of them repaints on both axes,
+        sleeps off-screen, and degrades to something readable under reduced motion. Pick the ones
+        that fit the brief.</p>
+      <div class="rv" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a class="btn solid" href="index.html" data-mag><span class="btn-l">Back to the homepage</span><span class="arw">&#8594;</span></a>
+        <a class="btn" href="media.html" data-mag><span class="btn-l">Start again at media</span></a>
+      </div>
+    </div>
+  </section>
+
+</div></div>
+<div id="spacer" aria-hidden="true"></div>
+
+<script src="./dist/dt-lab-chrome.js" defer></script>
+<script src="./dist/dt-lab.js" defer></script>
+<script src="./dist/dt-craft.js" defer></script>
+</body>
+</html>

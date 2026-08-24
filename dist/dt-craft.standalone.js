@@ -11,7 +11,11 @@
     if (document.getElementById("vp")) return;
     var host = document.createElement("div");
     host.innerHTML = MARKUP;
-    while (host.firstChild) document.body.insertBefore(host.firstChild, document.body.firstChild);
+    // a fragment, not a loop: inserting one node at a time before
+    // body.firstChild puts the whole block in backwards
+    var frag = document.createDocumentFragment();
+    while (host.firstChild) frag.appendChild(host.firstChild);
+    document.body.insertBefore(frag, document.body.firstChild);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
@@ -1970,6 +1974,9 @@
      ['#clients','Client results','What our clients say','Section'],
      ['#contact','Book a meeting','Start a project with us','Section']
     ].forEach(function (r) {
+      // a page that does not carry the section should not offer it: on the
+      // case study and the lab pages these anchors resolve to nothing
+      if (!document.querySelector(r[0])) return;
       items.push({ href: r[0], title: r[1], desc: r[2], cat: r[3], icon: '' });
     });
 

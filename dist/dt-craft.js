@@ -1954,6 +1954,9 @@
      ['#clients','Client results','What our clients say','Section'],
      ['#contact','Book a meeting','Start a project with us','Section']
     ].forEach(function (r) {
+      // a page that does not carry the section should not offer it: on the
+      // case study and the lab pages these anchors resolve to nothing
+      if (!document.querySelector(r[0])) return;
       items.push({ href: r[0], title: r[1], desc: r[2], cat: r[3], icon: '' });
     });
 
