@@ -344,9 +344,24 @@ are where they still read better than a picture would: the team ring stands in
 for people, and a landscape photograph is a worse placeholder there than an
 engraved plate.
 
-### Using a lab page in Webflow
+### Using it in Webflow
 
-Head:
+Two shapes work. **Pick one and do not mix them.**
+
+**A. One page, nothing else on the site** — the original pattern. Head gets
+the fonts, `dt-craft.css` and the theme snippet; before `</body>`:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-craft.standalone.js" defer></script>
+```
+
+`standalone` carries the markup **and** the craft layer. Never pair it with
+`dt-craft.js` or a `dt-lab-*.js` — the layer would run twice.
+
+**B. A site of these pages** — what the test site runs, and the better shape
+once there is more than one page.
+
+*Project Settings → Custom Code → Head* (every page needs these):
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -356,23 +371,43 @@ Head:
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-lab.css">
 ```
 
-plus the same theme snippet the homepage uses. Before `</body>`, three tags —
-**in this order**:
+plus the theme snippet. *Project Settings → Custom Code → Footer* — **the two
+shared files, and nothing page-specific:**
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-lab-media.js" defer></script>
 <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-lab.js" defer></script>
 <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.10.0/dist/dt-craft.js" defer></script>
 ```
 
-Swap `dt-lab-media.js` for `dt-lab-cards.js`, `-testimonials`, `-cta`,
-`-team`, `-backgrounds` or `-scroll`. Deferred scripts run in document order, so the markup exists before
-`dt-lab.js` looks for its components and before `dt-craft.js` looks for
-`#themeSw`. Reverse any two and the theme switch is dead.
+Then each page's **own head code** carries one line — its markup bundle:
 
-The bundles rewrite `media.html` to `/media` on the way through, so the `.html`
-files stay openable off disk while the hosted pages use real routes. The nav's
-lab links follow whichever shape the current URL has.
+| Page slug | Bundle |
+|---|---|
+| `/` | `dt-home.js` |
+| `/media` | `dt-lab-media.js` |
+| `/cards` | `dt-lab-cards.js` |
+| `/testimonials` | `dt-lab-testimonials.js` |
+| `/cta` | `dt-lab-cta.js` |
+| `/team` | `dt-lab-team.js` |
+| `/backgrounds` | `dt-lab-backgrounds.js` *(plural)* |
+| `/scroll` | `dt-lab-scroll.js` |
+
+**Why the head and not the footer.** Deferred scripts run in document order,
+and Webflow emits project footer code before page footer code — so a page
+bundle in the *footer* would run after the two shared files had already gone
+looking for markup that did not exist yet. In the page **head** it runs first,
+which is the order every one of these needs.
+
+**The failure this shape prevents.** Put a `dt-lab-<page>.js` in the *project*
+footer and it injects that page onto every page of the site; every other
+bundle then stands down, because each starts with
+`if (document.getElementById("vp")) return`. The symptom is every route
+rendering as whichever page was declared site-wide, and it is not obvious from
+the page you are looking at.
+
+The mapping above is applied on the test site
+(`digital-treasury-test-site.webflow.io`) via the Webflow API, so it can be
+re-applied from here whenever the tag moves rather than re-pasted by hand.
 
 ### Two things worth knowing
 
