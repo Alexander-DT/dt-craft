@@ -64,7 +64,8 @@
        disk or from the demo, and real routes on Webflow. The extension on
        the current URL says which one this is. */
     var LAB = [['media', 'Media'], ['cards', 'Cards'],
-               ['testimonials', 'Quotes'], ['cta', 'CTA'], ['team', 'Team']];
+               ['testimonials', 'Quotes'], ['cta', 'CTA'], ['team', 'Team'],
+               ['backgrounds', 'Grounds']];
     var path = location.pathname.toLowerCase();
     /* DTLabPage is only set by a generated bundle, which already carries
        hosted routes in its markup -- so its presence settles the question
@@ -118,11 +119,14 @@
   /* A render loop that sleeps. Nothing on these pages runs while it is
      off-screen or while the tab is hidden — with this many canvases on
      one document, that is the difference between idle and a hot fan. */
-  function loop(el, step) {
+  function loop(el, step, gate) {
     var live = false, running = false, id = 0;
     function frame(t) {
       if (!running) return;
       id = requestAnimationFrame(frame);
+      /* on screen is not the same as visible: inside the scene rig every
+         canvas shares one box, and only the two in play are worth drawing */
+      if (gate && !gate()) return;
       step(t || 0);
     }
     function set(on) {
@@ -598,6 +602,299 @@
     };
   };
 
+
+  /* ---------- aurora: ribbons of light bent across the frame.
+       Rendered at a fraction of device resolution and blurred, because
+       that is what an aurora is — there is no detail to lose, and the
+       blur is the whole effect. ---------- */
+  FIELDS.aurora = function (cv, ctx, o) {
+    var m = fit(cv, 0.55), r = rng(o.seed), bands = [];
+    function build() {
+      m = fit(cv, 0.55); bands.length = 0;
+      var n = Math.max(3, Math.round(5 * o.density));
+      for (var i = 0; i < n; i++) bands.push({
+        y: 0.2 + r() * 0.6,
+        amp: 0.04 + r() * 0.14,
+        f1: 0.6 + r() * 1.6,
+        f2: 1.3 + r() * 2.4,
+        ph: r() * 6.283,
+        sp: 0.4 + r() * 1.1,
+        h: 0.1 + r() * 0.22,
+        a: 0.45 + r() * 0.55
+      });
+    }
+    build();
+    addEventListener('resize', build, { passive: true });
+
+    return function (t) {
+      m = fit(cv, 0.55);
+      ctx.clearRect(0, 0, m.w, m.h);
+      ctx.globalCompositeOperation = o.blend ? 'multiply' : 'lighter';
+      try { ctx.filter = 'blur(' + (m.w * 0.018).toFixed(1) + 'px)'; } catch (e) {}
+      var a = t * 0.00016 * o.speed;
+      var step = Math.max(6, m.w / 42);
+
+      for (var i = 0; i < bands.length; i++) {
+        var b = bands[i], H = b.h * m.h;
+        var yAt = function (x) {
+          var u = x / m.w;
+          return (b.y
+            + Math.sin(u * b.f1 * 6.283 + a * b.sp + b.ph) * b.amp
+            + Math.sin(u * b.f2 * 6.283 - a * b.sp * 1.7 + b.ph) * b.amp * 0.42) * m.h;
+        };
+        ctx.beginPath();
+        for (var x = -step; x <= m.w + step; x += step) ctx.lineTo(x, yAt(x) - H / 2);
+        for (var x2 = m.w + step; x2 >= -step; x2 -= step) ctx.lineTo(x2, yAt(x2) + H / 2);
+        ctx.closePath();
+        var g = ctx.createLinearGradient(0, 0, m.w, m.h);
+        g.addColorStop(0, 'rgba(' + o.rgb + ',0)');
+        g.addColorStop(0.4, 'rgba(' + o.rgb + ',' + (0.3 * b.a * o.alpha).toFixed(3) + ')');
+        g.addColorStop(0.75, 'rgba(' + o.rgb + ',' + (0.14 * b.a * o.alpha).toFixed(3) + ')');
+        g.addColorStop(1, 'rgba(' + o.rgb + ',0)');
+        ctx.fillStyle = g;
+        ctx.fill();
+      }
+      try { ctx.filter = 'none'; } catch (e) {}
+      ctx.globalCompositeOperation = 'source-over';
+    };
+  };
+
+  /* ---------- terrain: a wireframe landscape running at the viewer.
+       Rows are spaced by 1/z rather than evenly, which is the whole
+       difference between perspective and a stack of wavy lines. ---------- */
+  FIELDS.terrain = function (cv, ctx, o) {
+    var m = fit(cv, 1.4);
+    function h(u, z) {
+      return Math.sin(u * 2.1 + z * 0.34) * 0.5
+           + Math.sin(u * 5.3 - z * 0.83) * 0.22
+           + Math.sin(z * 0.47 + u * 0.9) * 0.3;
+    }
+    return function (t) {
+      m = fit(cv, 1.4);
+      ctx.clearRect(0, 0, m.w, m.h);
+      var scroll = (t * 0.00042 * o.speed) % 1;
+      var rows = Math.max(12, Math.round(24 * o.density)), cols = 44;
+      var hz = m.h * 0.34;
+      ctx.lineWidth = m.dpr;
+      ctx.strokeStyle = 'rgb(' + o.rgb + ')';
+
+      for (var i = rows; i >= 1; i--) {
+        var z = i - scroll;
+        if (z < 0.55) continue;
+        var p = 1 / z;                       // the perspective divide
+        var y = hz + (m.h - hz) * p;
+        ctx.globalAlpha = Math.min(1, (1 - i / rows) * 0.62 + 0.03) * o.alpha;
+        ctx.beginPath();
+        for (var c = 0; c <= cols; c++) {
+          var u = c / cols - 0.5;
+          var x = m.w * 0.5 + u * m.w * p * 2.1;
+          var py = y - h(u * 6, z) * m.h * 0.1 * p;
+          if (c) ctx.lineTo(x, py); else ctx.moveTo(x, py);
+        }
+        ctx.stroke();
+      }
+      /* the horizon line, which is what makes it read as a landscape */
+      ctx.globalAlpha = 0.3 * o.alpha;
+      ctx.beginPath(); ctx.moveTo(0, hz); ctx.lineTo(m.w, hz); ctx.stroke();
+      ctx.globalAlpha = 1;
+    };
+  };
+
+  /* ---------- a shared low-resolution buffer.
+       Per-pixel fields are drawn small and scaled up: at this blur there
+       is no detail to lose, and it turns a full-frame pixel loop into a
+       twenty-thousand pixel one. ---------- */
+  function lowres(cv, ctx, o, divisor, shade) {
+    var m = fit(cv, 1), off = document.createElement('canvas');
+    var octx = off.getContext('2d'), img = null, W = 0, H = 0;
+    function build() {
+      m = fit(cv, 1);
+      W = Math.max(24, Math.round(m.cw / divisor));
+      H = Math.max(14, Math.round(m.ch / divisor));
+      off.width = W; off.height = H;
+      img = octx.createImageData(W, H);
+    }
+    build();
+    addEventListener('resize', build, { passive: true });
+
+    return function (t) {
+      m = fit(cv, 1);
+      if (!img || Math.abs(W - Math.round(m.cw / divisor)) > 2) build();
+      var d = img.data, rgb = o.rgb.split(',');
+      var cr = +rgb[0], cg = +rgb[1], cb = +rgb[2], i = 0;
+      for (var y = 0; y < H; y++) {
+        for (var x = 0; x < W; x++) {
+          var a = shade(x / W, y / H, t);
+          d[i] = cr; d[i + 1] = cg; d[i + 2] = cb;
+          d[i + 3] = a * 255 * o.alpha;
+          i += 4;
+        }
+      }
+      octx.putImageData(img, 0, 0);
+      ctx.clearRect(0, 0, m.w, m.h);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(off, 0, 0, m.w, m.h);
+    };
+  }
+
+  /* ---------- plasma: domain-warped interference ---------- */
+  FIELDS.plasma = function (cv, ctx, o) {
+    return lowres(cv, ctx, o, 9, function (u, v, t) {
+      var a = t * 0.00035 * o.speed;
+      var wx = u * 6 + Math.sin(v * 4.1 + a) * 0.6;
+      var wy = v * 6 + Math.cos(u * 3.7 - a * 0.8) * 0.6;
+      var s = Math.sin(wx + a)
+            + Math.sin(wy - a * 0.8)
+            + Math.sin((wx + wy) * 0.7 + a * 0.6)
+            + Math.sin(Math.sqrt(wx * wx + wy * wy) * 1.4 - a * 1.2);
+      var n = (s + 4) / 8;
+      return Math.pow(n, 2.6) * 0.62;
+    });
+  };
+
+  /* ---------- caustics: the same machinery, a much harder transfer
+       curve, which turns broad interference into thin filaments ---------- */
+  FIELDS.caustics = function (cv, ctx, o) {
+    return lowres(cv, ctx, o, 7, function (u, v, t) {
+      var a = t * 0.00028 * o.speed;
+      var s = Math.sin(u * 11 + a)
+            + Math.sin(v * 13 - a * 0.9)
+            + Math.sin((u + v) * 9 + a * 0.7)
+            + Math.sin((u - v) * 15 - a * 0.5);
+      var n = Math.abs(s) / 4;
+      return Math.pow(1 - n, 7) * 0.7;
+    });
+  };
+
+  /* ---------- circuit: Manhattan traces with a pulse running each one ---------- */
+  FIELDS.circuit = function (cv, ctx, o) {
+    var m = fit(cv, 1.5), paths = [], r = rng(o.seed);
+    function build() {
+      m = fit(cv, 1.5); paths.length = 0;
+      var grid = 34 * m.dpr;
+      var n = Math.max(8, Math.round(22 * o.density));
+      for (var i = 0; i < n; i++) {
+        var pts = [], x = Math.round(r() * m.w / grid) * grid, y = Math.round(r() * m.h / grid) * grid;
+        pts.push([x, y]);
+        var legs = 3 + Math.floor(r() * 4);
+        for (var j = 0; j < legs; j++) {
+          var len = (2 + Math.floor(r() * 6)) * grid;
+          if (j % 2 === 0) x += r() > 0.5 ? len : -len; else y += r() > 0.5 ? len : -len;
+          x = clamp(x, 0, m.w); y = clamp(y, 0, m.h);
+          pts.push([x, y]);
+        }
+        /* total length, so the pulse travels at a constant speed */
+        var seg = [], tot = 0;
+        for (var k = 1; k < pts.length; k++) {
+          var d = Math.abs(pts[k][0] - pts[k - 1][0]) + Math.abs(pts[k][1] - pts[k - 1][1]);
+          seg.push(d); tot += d;
+        }
+        paths.push({ pts: pts, seg: seg, tot: tot || 1, off: r(), sp: 0.4 + r() * 0.8 });
+      }
+    }
+    build();
+    addEventListener('resize', build, { passive: true });
+
+    return function (t) {
+      m = fit(cv, 1.5);
+      ctx.clearRect(0, 0, m.w, m.h);
+      ctx.lineWidth = m.dpr;
+      ctx.lineJoin = 'round';
+
+      for (var i = 0; i < paths.length; i++) {
+        var P = paths[i];
+        ctx.globalAlpha = 0.13 * o.alpha;
+        ctx.strokeStyle = 'rgb(' + o.rgb + ')';
+        ctx.beginPath();
+        ctx.moveTo(P.pts[0][0], P.pts[0][1]);
+        for (var k = 1; k < P.pts.length; k++) ctx.lineTo(P.pts[k][0], P.pts[k][1]);
+        ctx.stroke();
+
+        /* pads at the ends, so a trace terminates in something */
+        ctx.globalAlpha = 0.28 * o.alpha;
+        ctx.beginPath();
+        ctx.arc(P.pts[0][0], P.pts[0][1], 2.2 * m.dpr, 0, 6.283);
+        ctx.arc(P.pts[P.pts.length - 1][0], P.pts[P.pts.length - 1][1], 2.2 * m.dpr, 0, 6.283);
+        ctx.fillStyle = 'rgb(' + o.rgb + ')';
+        ctx.fill();
+
+        /* the pulse: walk the segments until the travelled distance lands */
+        var trav = ((t * 0.00016 * o.speed * P.sp + P.off) % 1) * P.tot;
+        var acc = 0;
+        for (var s = 0; s < P.seg.length; s++) {
+          if (acc + P.seg[s] >= trav) {
+            var f = P.seg[s] ? (trav - acc) / P.seg[s] : 0;
+            var px = lerp(P.pts[s][0], P.pts[s + 1][0], f);
+            var py = lerp(P.pts[s][1], P.pts[s + 1][1], f);
+            var g = ctx.createRadialGradient(px, py, 0, px, py, 16 * m.dpr);
+            g.addColorStop(0, 'rgba(' + o.rgb + ',' + (0.85 * o.alpha).toFixed(3) + ')');
+            g.addColorStop(1, 'rgba(' + o.rgb + ',0)');
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(px, py, 16 * m.dpr, 0, 6.283); ctx.fill();
+            break;
+          }
+          acc += P.seg[s];
+        }
+      }
+      ctx.globalAlpha = 1;
+    };
+  };
+
+  /* ---------- orbits: ellipse paths with bodies and trailing arcs ---------- */
+  FIELDS.orbits = function (cv, ctx, o) {
+    var m = fit(cv, 1.5), rings = [], r = rng(o.seed);
+    function build() {
+      m = fit(cv, 1.5); rings.length = 0;
+      var n = Math.max(4, Math.round(8 * o.density));
+      for (var i = 0; i < n; i++) rings.push({
+        rx: 0.12 + (i / n) * 0.42 + r() * 0.05,
+        ry: (0.12 + (i / n) * 0.42) * (0.28 + r() * 0.5),
+        rot: r() * 3.14,
+        sp: (0.35 + r() * 0.9) * (r() > 0.5 ? 1 : -1),
+        ph: r() * 6.283,
+        sz: 1.6 + r() * 2.4
+      });
+    }
+    build();
+    addEventListener('resize', build, { passive: true });
+
+    return function (t) {
+      m = fit(cv, 1.5);
+      ctx.clearRect(0, 0, m.w, m.h);
+      var cx = m.w * 0.5, cy = m.h * 0.5, base = Math.min(m.w, m.h);
+      ctx.lineWidth = m.dpr;
+
+      for (var i = 0; i < rings.length; i++) {
+        var g2 = rings[i];
+        var rx = g2.rx * base, ry = g2.ry * base;
+        ctx.globalAlpha = 0.11 * o.alpha;
+        ctx.strokeStyle = 'rgb(' + o.rgb + ')';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, g2.rot, 0, 6.283);
+        ctx.stroke();
+
+        var ang = t * 0.00022 * o.speed * g2.sp + g2.ph;
+        /* the trail is an arc of the same ellipse, so it sits on the path */
+        ctx.globalAlpha = 0.4 * o.alpha;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, g2.rot, ang - 0.5 * (g2.sp > 0 ? 1 : -1), ang, g2.sp < 0);
+        ctx.stroke();
+
+        var bx = cx + Math.cos(ang) * rx * Math.cos(g2.rot) - Math.sin(ang) * ry * Math.sin(g2.rot);
+        var by = cy + Math.cos(ang) * rx * Math.sin(g2.rot) + Math.sin(ang) * ry * Math.cos(g2.rot);
+        ctx.globalAlpha = 1;
+        var rg = ctx.createRadialGradient(bx, by, 0, bx, by, g2.sz * 5 * m.dpr);
+        rg.addColorStop(0, 'rgba(' + o.rgb + ',' + (0.95 * o.alpha).toFixed(3) + ')');
+        rg.addColorStop(1, 'rgba(' + o.rgb + ',0)');
+        ctx.fillStyle = rg;
+        ctx.beginPath(); ctx.arc(bx, by, g2.sz * 5 * m.dpr, 0, 6.283); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    };
+  };
+
   /* Exposed for debugging only: a hidden or headless tab never runs a
      frame, so this is how a draw path gets exercised without one. */
   window.DTLab = { FIELDS: FIELDS, fit: fit };
@@ -617,11 +914,17 @@
         speed: parseFloat(cv.getAttribute('data-speed') || '1'),
         density: parseFloat(cv.getAttribute('data-density') || '1'),
         size: parseFloat(cv.getAttribute('data-size') || '30'),
-        seed: parseInt(cv.getAttribute('data-seed') || '7', 10)
+        seed: parseInt(cv.getAttribute('data-seed') || '7', 10),
+        blend: 0
       };
       /* the tint comes off the canvas's own host, so a field inside an
-         inverted island keeps the bright accent while the page flips */
-      onTheme(function () { o.rgb = tint(cv, '--fx-rgb', '227,185,107'); });
+         inverted island keeps the bright accent while the page flips.
+         --fx-blend says which way an additive field has to composite:
+         lightening onto the dark ground, darkening onto paper. */
+      onTheme(function () {
+        o.rgb = tint(cv, '--fx-rgb', '227,185,107');
+        o.blend = numvar(cv, '--fx-blend', 0) > 0.5 ? 1 : 0;
+      });
 
       var step = make(cv, ctx, o);
       if (reduce) {
@@ -631,7 +934,8 @@
         addEventListener('dt:theme', function () { requestAnimationFrame(function () { step(4200); }); });
         return;
       }
-      loop(cv, step);
+      var scene = cv.closest ? cv.closest('.scene') : null;
+      loop(cv, step, scene ? function () { return scene.dataset.on !== '0'; } : null);
     });
   })();
 
@@ -1770,6 +2074,77 @@
       }
       measure();
       addEventListener('resize', measure, { passive: true });
+    });
+  })();
+
+  /* =========================================================
+     23. SCENES — a rig of full-bleed grounds, each arriving over the
+     last a different way.
+
+     One scrubbed value drives the whole rig. Scene i is fully present
+     at t = i, so its arrival occupies t = i-1 -> i and its departure
+     t = i -> i+1. Both are clamped, which is why the first scene never
+     arrives and the last never leaves.
+
+     The transitions themselves are CSS, keyed off --a (arrival) and
+     --o (departure). Adding a seventh way in is one selector, not one
+     more branch in here.
+     ========================================================= */
+  (function scenes() {
+    $$('[data-scenes]').forEach(function (host) {
+      var pinEl = $('.scenes-pin', host);
+      var list = $$('.scene', host);
+      if (!pinEl || list.length < 2) return;
+      var N = list.length;
+
+      list.forEach(function (s, i) { s.style.setProperty('--zi', i + 1); });
+
+      /* one screen of travel per transition, plus half a screen at the
+         end so the last scene can be read rather than glimpsed */
+      host.style.height = ((N + 0.5) * 100) + 'vh';
+
+      var rail = $('.scenes-rail', host);
+      var dots = rail ? $$('span', rail) : [];
+
+      if (reduce) {
+        list.forEach(function (s) {
+          s.dataset.on = '1';
+          s.style.setProperty('--a', '1');
+          s.style.setProperty('--o', '0');
+        });
+        dots.forEach(function (d) { d.classList.add('on'); });
+        return;
+      }
+
+      var drive = pin(host, pinEl);
+      var lastIdx = -1;
+
+      function paint() {
+        drive();
+        var k = progress(host, 'through');
+        /* capped at N-1: past that the rig is holding on the last scene,
+           and letting t run on would start it departing into nothing */
+        var t = Math.min(k * (N - 0.5), N - 1);
+
+        for (var i = 0; i < N; i++) {
+          var a = clamp(t - (i - 1), 0, 1);
+          var o = clamp(t - i, 0, 1);
+          var el = list[i];
+          var on = (a > 0.0005 && o < 0.9995) ? '1' : '0';
+          if (el.dataset.on !== on) el.dataset.on = on;
+          if (on === '0') continue;
+          el.style.setProperty('--a', a.toFixed(4));
+          el.style.setProperty('--o', o.toFixed(4));
+        }
+
+        var idx = clamp(Math.round(t), 0, N - 1);
+        if (idx !== lastIdx) {
+          lastIdx = idx;
+          for (var d = 0; d < dots.length; d++) dots[d].classList.toggle('on', d === idx);
+        }
+      }
+      loop(host, paint);
+      paint();
     });
   })();
 

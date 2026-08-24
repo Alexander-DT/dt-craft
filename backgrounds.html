@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backgrounds — Component Lab — Digital Treasury</title>
+<meta name="description" content="Seventeen procedural grounds, and six ways one scene arrives over the last: cover, curtain, iris, fold, slide and push — all scrubbed from the scrollbar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="./dist/dt-craft.css">
+<link rel="stylesheet" href="./dist/dt-lab.css">
+<script>
+(function(){try{
+  var r=document.documentElement,t=localStorage.getItem('dt-theme'),a=localStorage.getItem('dt-accent');
+  if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  r.setAttribute('data-theme',t);
+  r.setAttribute('data-accent',/^(gold|amber|azure|verdant|crimson|violet)$/.test(a)?a:'gold');
+}catch(e){}})();
+</script>
+</head>
+<body>
+
+<div id="vp"><div id="scroller">
+
+  <header class="lab-hero">
+    <div class="wrap">
+      <p class="mono eyebrow rv">Component lab &middot; 06 &nbsp;/&nbsp; Backgrounds</p>
+      <h1 class="rv">One page, six <span class="it">rooms</span>.</h1>
+      <p class="lede rv">Most sites have one background and light it differently. This is the other
+        approach: a sequence of grounds a reader travels between, where each one arrives over the
+        last in its own way &mdash; covered, wiped, opened through, folded up or pushed sideways.
+        Every transition is scrubbed from the scrollbar, so all six run backwards as cleanly as
+        forwards.</p>
+
+      <nav class="lab-tabs rv" style="margin-top:34px" aria-label="Component lab">
+        <a class="lab-tab" href="media.html"><i></i>Media</a>
+        <a class="lab-tab" href="cards.html"><i></i>Cards</a>
+        <a class="lab-tab" href="testimonials.html"><i></i>Testimonials</a>
+        <a class="lab-tab" href="cta.html"><i></i>Call to action</a>
+        <a class="lab-tab" href="team.html"><i></i>Team</a>
+        <a class="lab-tab" href="backgrounds.html" aria-current="page"><i></i>Backgrounds</a>
+      </nav>
+
+      <div class="lab-figs rv">
+        <div class="lab-fig"><b>17</b><em>Procedural grounds</em></div>
+        <div class="lab-fig"><b>06</b><em>Scene transitions</em></div>
+        <div class="lab-fig"><b>0</b><em>Image files</em></div>
+        <div class="lab-fig"><b>2</b><em>Canvases drawn at once</em></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ THE SCENE RIG ============ -->
+  <div class="scenes" data-scenes>
+    <div class="scenes-pin">
+
+      <!-- 01 — AURORA -->
+      <section class="scene" data-enter="cover" data-exit="recede" aria-label="Aurora">
+        <div class="scene-body">
+          <canvas class="scene-bg" data-bg="aurora" data-density="1.1" data-speed="1" data-alpha="1" data-seed="11" aria-hidden="true"></canvas>
+          <span class="scene-tint" aria-hidden="true"></span>
+          <div class="scene-in"><div class="wrap"><div class="scene-copy">
+            <span class="mono k">Ground 01 &middot; Aurora</span>
+            <h2>Light with <span class="it">no edges</span>.</h2>
+            <p>Five ribbons bent across the frame on offset loops, rendered at 55% of device
+              resolution and blurred &mdash; because an aurora has no detail to lose, and the blur
+              is the whole effect. It screens onto the dark ground and multiplies onto paper, so
+              neither theme washes it out.</p>
+            <ul class="scene-spec">
+              <li>Ribbons <b>5</b></li><li>Render scale <b>0.55&times;</b></li>
+              <li>Canvas blur</li><li>Blend flips with theme</li>
+            </ul>
+          </div></div></div>
+        </div>
+      </section>
+
+      <!-- 02 — TERRAIN -->
+      <section class="scene" data-enter="cover" data-exit="hold" aria-label="Terrain">
+        <div class="scene-body">
+          <canvas class="scene-bg" data-bg="terrain" data-density="1" data-speed="1" data-alpha=".95" aria-hidden="true"></canvas>
+          <span class="scene-tint" aria-hidden="true"></span>
+          <div class="scene-in"><div class="wrap"><div class="scene-copy">
+            <span class="mono k">Ground 02 &middot; Terrain</span>
+            <h2>A landscape, running at you.</h2>
+            <p>Rows spaced by one-over-z rather than evenly, which is the entire difference between
+              perspective and a stack of wavy lines. The height field is three summed sines, so the
+              ridges never repeat inside a viewing.</p>
+            <ul class="scene-spec">
+              <li>Rows <b>24</b></li><li>Perspective divide</li>
+              <li>Horizon at <b>34%</b></li><li>Continuous scroll</li>
+            </ul>
+          </div></div></div>
+        </div>
+        <p class="scene-tag" aria-hidden="true"><i></i>Arrived by <b>cover</b></p>
+      </section>
+
+      <!-- 03 — PLASMA -->
+      <section class="scene" data-enter="curtain" data-exit="recede" aria-label="Plasma">
+        <div class="scene-body">
+          <canvas class="scene-bg" data-bg="plasma" data-density="1" data-speed="1" data-alpha="1" aria-hidden="true"></canvas>
+          <span class="scene-tint" aria-hidden="true"></span>
+          <div class="scene-in"><div class="wrap"><div class="scene-copy">
+            <span class="mono k">Ground 03 &middot; Plasma</span>
+            <h2>Interference, warped.</h2>
+            <p>Four sine fields sampled through a domain warp, computed at a ninth of the frame and
+              scaled back up. That turns a full-resolution pixel loop into a twenty-thousand pixel
+              one &mdash; a shader's look without a shader's budget.</p>
+            <ul class="scene-spec">
+              <li>Per-pixel</li><li>Divisor <b>9</b></li>
+              <li>Domain warp</li><li>~20k px / frame</li>
+            </ul>
+          </div></div></div>
+        </div>
+        <p class="scene-tag" aria-hidden="true"><i></i>Arrived by <b>curtain</b></p>
+      </section>
+
+      <!-- 04 — CIRCUIT -->
+      <section class="scene" data-enter="iris" data-exit="rise" aria-label="Circuit">
+        <div class="scene-body">
+          <canvas class="scene-bg" data-bg="circuit" data-density="1.2" data-speed="1" data-alpha=".95" aria-hidden="true"></canvas>
+          <span class="scene-tint" aria-hidden="true"></span>
+          <div class="scene-in"><div class="wrap"><div class="scene-copy">
+            <span class="mono k">Ground 04 &middot; Circuit</span>
+            <h2>Traces, and something travelling them.</h2>
+            <p>Manhattan paths snapped to a grid, each terminating in a pad, each carrying a pulse
+              that walks the segments at a constant speed rather than a constant parameter &mdash;
+              so a long leg does not go faster than a short one.</p>
+            <ul class="scene-spec">
+              <li>Traces <b>26</b></li><li>Arc-length pulse</li>
+              <li>Grid-snapped</li><li>Radial glow</li>
+            </ul>
+          </div></div></div>
+        </div>
+        <p class="scene-tag" aria-hidden="true"><i></i>Arrived by <b>iris</b></p>
+      </section>
+
+      <!-- 05 — CAUSTICS -->
+      <section class="scene" data-enter="fold" data-exit="slide" aria-label="Caustics">
+        <div class="scene-body">
+          <canvas class="scene-bg" data-bg="caustics" data-density="1" data-speed="1" data-alpha=".9" aria-hidden="true"></canvas>
+          <span class="scene-tint" aria-hidden="true"></span>
+          <div class="scene-in"><div class="wrap"><div class="scene-copy">
+            <span class="mono k">Ground 05 &middot; Caustics</span>
+            <h2>The same maths, a harder curve.</h2>
+            <p>Identical machinery to the plasma, with the transfer curve raised to the seventh
+              power. That is all it takes to turn broad interference into the thin bright filaments
+              light makes on the floor of a pool.</p>
+            <ul class="scene-spec">
+              <li>Shared engine</li><li>Divisor <b>7</b></li>
+              <li>Transfer <b>x&#8311;</b></li><li>Filament falloff</li>
+            </ul>
+          </div></div></div>
+        </div>
+        <p class="scene-tag" aria-hidden="true"><i></i>Arrived by <b>fold</b></p>
+      </section>
+
+      <!-- 06 — ORBITS -->
+      <section class="scene" data-enter="slide" data-exit="recede" aria-label="Orbits">
+        <div class="scene-body">
+          <canvas class="scene-bg" data-bg="orbits" data-density="1.1" data-speed="1" data-alpha=".95" aria-hidden="true"></canvas>
+          <span class="scene-tint" aria-hidden="true"></span>
+          <div class="scene-in"><div class="wrap"><div class="scene-copy">
+            <span class="mono k">Ground 06 &middot; Orbits</span>
+            <h2>Paths, and the things on them.</h2>
+            <p>Eight rotated ellipses with a body on each. The trail is an arc of the same ellipse
+              rather than a fading line, so it sits exactly on the path instead of near it &mdash;
+              which is the detail that stops it reading as a screensaver.</p>
+            <ul class="scene-spec">
+              <li>Orbits <b>8</b></li><li>Rotated ellipses</li>
+              <li>Trail on-path</li><li>Both directions</li>
+            </ul>
+          </div></div></div>
+        </div>
+        <p class="scene-tag" aria-hidden="true"><i></i>Arrived by <b>slide</b></p>
+      </section>
+
+      <div class="scenes-rail" aria-hidden="true">
+        <span class="on"></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PARALLAX BAND ============ -->
+  <section class="lab-sec" id="parallax" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">At section scale</p>
+          <h2 class="display" data-split="rise">Three grounds, three rates.</h2>
+        </div>
+        <div>
+          <p class="lede rv">Not every background needs a whole screen. The same fields stack
+            inside one band and travel at different rates against the scroll, which buys depth
+            without taking the page hostage.</p>
+          <ul class="spec mono rv">
+            <li>Three layers</li><li>-6% / -18% / -34%</li>
+            <li>One scrubbed value</li><li>Section height, not viewport</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="plx" data-band data-ramp="0.9">
+      <div class="plx-l"><canvas data-bg="dust" data-density=".7" data-speed=".6" data-alpha=".7" data-seed="3" aria-hidden="true"></canvas></div>
+      <div class="plx-l"><canvas data-bg="contour" data-density=".8" data-speed=".8" data-alpha=".8" aria-hidden="true"></canvas></div>
+      <div class="plx-l"><canvas data-bg="mesh" data-density="1" data-speed="1.1" data-alpha=".9" data-seed="19" aria-hidden="true"></canvas></div>
+      <span class="plx-veil" aria-hidden="true"></span>
+      <div class="plx-in"><div class="inner">
+        <h3>Depth is a rate, not a shadow.</h3>
+        <p>Three fields at three speeds read as three distances. Nothing here is blurred and
+          nothing is scaled &mdash; only the rate differs.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ FIELD INDEX ============ -->
+  <section class="lab-sec" id="index">
+    <div class="wrap">
+      <div class="lab-head">
+        <div>
+          <p class="mono eyebrow rv">The set</p>
+          <h2 class="display" data-split="rise">Seventeen grounds.</h2>
+        </div>
+        <div>
+          <p class="lede rv">Every field the lab can draw, at thumbnail size. One engine; a canvas
+            declares which field it is and how hard to run it. Each reads its tint from its own
+            host element, so a field inside an inverted island keeps the bright accent while the
+            page around it flips.</p>
+          <ul class="spec mono rv">
+            <li>data-bg</li><li>data-speed</li><li>data-density</li>
+            <li>data-alpha</li><li>data-seed</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="fgrid rv">
+        <div class="fcell"><canvas data-bg="starfield" data-density="1.4" aria-hidden="true"></canvas><em>01</em><b>starfield</b></div>
+        <div class="fcell"><canvas data-bg="rings" data-speed="1.4" aria-hidden="true"></canvas><em>02</em><b>rings</b></div>
+        <div class="fcell"><canvas data-bg="streaks" data-density="1.6" data-speed="1.6" aria-hidden="true"></canvas><em>03</em><b>streaks</b></div>
+        <div class="fcell"><canvas data-bg="scan" data-speed="1.3" aria-hidden="true"></canvas><em>04</em><b>scan</b></div>
+        <div class="fcell"><canvas data-bg="grid3d" data-speed="1.4" aria-hidden="true"></canvas><em>05</em><b>grid3d</b></div>
+        <div class="fcell"><canvas data-bg="hex" data-size="16" data-alpha="1.5" aria-hidden="true"></canvas><em>06</em><b>hex</b></div>
+        <div class="fcell"><canvas data-bg="mesh" data-density="1.6" aria-hidden="true"></canvas><em>07</em><b>mesh</b></div>
+        <div class="fcell"><canvas data-bg="contour" data-density="1.2" aria-hidden="true"></canvas><em>08</em><b>contour</b></div>
+        <div class="fcell"><canvas data-bg="dust" data-density="1.8" aria-hidden="true"></canvas><em>09</em><b>dust</b></div>
+        <div class="fcell"><canvas data-bg="moire" data-density="1.2" aria-hidden="true"></canvas><em>10</em><b>moire</b></div>
+        <div class="fcell"><canvas data-bg="ledger" data-density="1.4" aria-hidden="true"></canvas><em>11</em><b>ledger</b></div>
+        <div class="fcell"><canvas data-bg="aurora" data-density="1.4" data-speed="1.4" aria-hidden="true"></canvas><em>12</em><b>aurora</b></div>
+        <div class="fcell"><canvas data-bg="terrain" data-density="1.2" data-speed="1.4" aria-hidden="true"></canvas><em>13</em><b>terrain</b></div>
+        <div class="fcell"><canvas data-bg="plasma" data-speed="1.6" aria-hidden="true"></canvas><em>14</em><b>plasma</b></div>
+        <div class="fcell"><canvas data-bg="caustics" data-speed="1.5" aria-hidden="true"></canvas><em>15</em><b>caustics</b></div>
+        <div class="fcell"><canvas data-bg="circuit" data-density="1.6" data-speed="1.5" aria-hidden="true"></canvas><em>16</em><b>circuit</b></div>
+        <div class="fcell"><canvas data-bg="orbits" data-density="1.3" data-speed="1.6" aria-hidden="true"></canvas><em>17</em><b>orbits</b></div>
+      </div>
+
+      <p class="mono rv" style="color:var(--paper-3);margin-top:26px;text-transform:none;letter-spacing:.06em;font-size:.66rem">
+        Every field sleeps when it leaves the screen and when the tab hides. Inside the scene rig
+        above, only the two scenes actually in play are drawn &mdash; the other four hold their last
+        frame behind <b style="color:var(--gold)">visibility: hidden</b>. Under
+        <b style="color:var(--gold)">prefers-reduced-motion</b> each paints a single static frame
+        and the rig becomes six ordinary sections.
+      </p>
+    </div>
+  </section>
+
+  <section class="lab-sec" id="next">
+    <div class="wrap" style="text-align:center">
+      <p class="mono eyebrow rv" style="justify-content:center">Back to the components</p>
+      <h2 class="display rv" style="margin-bottom:26px">Grounds are half of it.</h2>
+      <p class="lede rv" style="margin:0 auto 32px">The other half is what sits on top. Nineteen
+        components across five pages, all on the same token set.</p>
+      <div class="rv" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a class="btn solid" href="media.html" data-mag><span class="btn-l">Media</span><span class="arw">&#8594;</span></a>
+        <a class="btn" href="index.html" data-mag><span class="btn-l">The homepage</span></a>
+      </div>
+    </div>
+  </section>
+
+</div></div>
+<div id="spacer" aria-hidden="true"></div>
+
+<script src="./dist/dt-lab-chrome.js" defer></script>
+<script src="./dist/dt-lab.js" defer></script>
+<script src="./dist/dt-craft.js" defer></script>
+</body>
+</html>

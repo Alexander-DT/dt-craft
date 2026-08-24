@@ -25,7 +25,7 @@ dist/dt-lab.css                the component lab's styling
 dist/dt-lab.js                 the component lab's behaviour
 dist/dt-lab-chrome.js          nav + palette + atmosphere + footer (generated)
 dist/dt-lab-<page>.js          one per lab page: chrome + markup   (generated)
-media|cards|testimonials|cta|team.html   the five lab pages
+media|cards|testimonials|cta|team|backgrounds.html   the six lab pages
 
 build.js                       regenerates everything marked (generated)
 ```
@@ -59,7 +59,7 @@ place while you rebuild sections natively one at a time.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.css">
 
 <!-- Theme, set before first paint. Must be inline and blocking: a reader who
      chose light otherwise gets a frame of dark on every navigation. -->
@@ -80,10 +80,10 @@ place while you rebuild sections natively one at a time.
 
 ```html
 <!-- blank page: injects its own markup -->
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.standalone.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.standalone.js" defer></script>
 
 <!-- or, once the sections exist natively in Webflow -->
-<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.js" defer></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.js" defer></script> -->
 ```
 
 > Pin the version tag. Never point at `@main` — a commit would silently change
@@ -202,8 +202,9 @@ arrival choreography attaches itself.
 
 ## The component lab
 
-Five pages of alternatives, so a direction can be chosen from something
-scrollable rather than from a description. Nineteen components in all:
+Six pages of alternatives, so a direction can be chosen from something
+scrollable rather than from a description. Nineteen components and seventeen
+procedural grounds in all:
 
 | Page | Components |
 |---|---|
@@ -212,6 +213,7 @@ scrollable rather than from a description. Nineteen components in all:
 | `testimonials.html` | orbit · leaning marquee wall · spotlight rail · coverflow · ledger |
 | `cta.html` | honeycomb hive · vault door · aurora · drawn seal · marquee stamp |
 | `team.html` | orbit · roster with pointer-carried portrait · discipline helix |
+| `backgrounds.html` | six full-bleed scenes and the transitions between them, a parallax band, and every ground at thumbnail size |
 
 Everything resolves through the same tokens as the homepage, so both axes
 repaint the lab as well. Nothing here introduces a hue.
@@ -227,10 +229,42 @@ A canvas declares which field it is and how to run it:
 ```
 
 `data-bg` is one of `starfield`, `rings`, `streaks`, `scan`, `grid3d`, `hex`,
-`mesh`, `contour`, `dust`, `moire`, `ledger`. Each reads `--fx-rgb` **from its
-own host element**, so a field inside an inverted island keeps the bright
-accent while the page flips. Every one sleeps off-screen and when the tab
-hides, and paints a single static frame under `prefers-reduced-motion`.
+`mesh`, `contour`, `dust`, `moire`, `ledger`, `aurora`, `terrain`, `plasma`,
+`caustics`, `circuit`, `orbits` — seventeen in all, and `backgrounds.html`
+shows every one of them at thumbnail size.
+
+Each reads `--fx-rgb` **from its own host element**, so a field inside an
+inverted island keeps the bright accent while the page flips, and `--fx-blend`
+to know which way to composite: lightening onto the dark ground, darkening
+onto paper. Every one sleeps off-screen and when the tab hides, and paints a
+single static frame under `prefers-reduced-motion`.
+
+`plasma` and `caustics` share one engine that computes at a seventh to a ninth
+of the frame and scales back up — a shader's look without a shader's budget.
+`aurora` renders at 0.55× and leans on `ctx.filter` blur, because an aurora has
+no detail to lose.
+
+### The scene rig
+
+`backgrounds.html` carries a rig of full-bleed scenes where each arrives over
+the last a different way. One scrubbed value drives all of it: scene *i* is
+fully present at `t = i`, so its arrival occupies `t = i-1 → i` and its
+departure `t = i → i+1`, both clamped — which is why the first scene never
+arrives and the last never leaves.
+
+```html
+<section class="scene" data-enter="curtain" data-exit="hold">
+```
+
+`data-enter` is `cover`, `push`, `slide`, `curtain`, `iris` or `fold`;
+`data-exit` is `recede` (the default), `rise`, `slide` or `hold`. Both are
+pure CSS keyed off `--a` and `--o`, so a seventh way in is one selector rather
+than another branch in the module.
+
+Only the two scenes actually in play are drawn — the rest hold their last frame
+behind `visibility: hidden`, gated by `data-on` on the scene itself. The rig's
+height is set from the scene count, and under `prefers-reduced-motion` it
+collapses to six ordinary full-height sections.
 
 ### The specimen plate
 
@@ -247,21 +281,21 @@ Head:
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-lab.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-lab.css">
 ```
 
 plus the same theme snippet the homepage uses. Before `</body>`, three tags —
 **in this order**:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-lab-media.js" defer></script>
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-lab.js" defer></script>
-<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.6.0/dist/dt-craft.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-lab-media.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-lab.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@v1.7.0/dist/dt-craft.js" defer></script>
 ```
 
-Swap `dt-lab-media.js` for `dt-lab-cards.js`, `-testimonials`, `-cta` or
-`-team`. Deferred scripts run in document order, so the markup exists before
+Swap `dt-lab-media.js` for `dt-lab-cards.js`, `-testimonials`, `-cta`,
+`-team` or `-backgrounds`. Deferred scripts run in document order, so the markup exists before
 `dt-lab.js` looks for its components and before `dt-craft.js` looks for
 `#themeSw`. Reverse any two and the theme switch is dead.
 

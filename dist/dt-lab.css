@@ -7,6 +7,11 @@
  *  moves along the accent ramp or changes surface elevation instead.
  */
 
+/* Which way an additive field has to composite: lightening onto the dark
+   ground, darkening onto paper. Read by the canvas engine, not by CSS. */
+:root { --fx-blend: 0; }
+[data-theme="light"] { --fx-blend: 1; }
+
 /* ============================================================
    0. LAB SHELL
    ============================================================ */
@@ -1688,6 +1693,178 @@
   background: linear-gradient(180deg, transparent, rgba(var(--acc-rgb), .35), transparent);
 }
 
+
+/* ============================================================
+   28. SCENES — full-bleed grounds, and the ways one arrives over the
+   last. Every transition is scrubbed from a single value, so each of
+   them runs backwards as cleanly as forwards.
+
+   No position:sticky here either: the pin offset is driven in JS, for
+   the same reason the gallery and the card stack are.
+   ============================================================ */
+.scenes { position: relative; z-index: 1; }
+.scenes-pin {
+  position: relative; height: 100vh; overflow: hidden;
+  will-change: transform;
+  perspective: 1500px;
+}
+.scene {
+  position: absolute; inset: 0;
+  z-index: var(--zi, 1);
+  will-change: transform, clip-path, opacity;
+}
+/* fully covered, or not yet arrived: nothing to paint */
+.scene[data-on="0"] { visibility: hidden; }
+
+/* ---------- arrival ---------- */
+.scene[data-enter="cover"]   { transform: translateY(calc((1 - var(--a, 1)) * 100%)); }
+.scene[data-enter="push"]    { transform: translateY(calc((1 - var(--a, 1)) * 100%)); }
+.scene[data-enter="slide"]   { transform: translateX(calc((1 - var(--a, 1)) * 100%)); }
+.scene[data-enter="curtain"] { clip-path: inset(calc((1 - var(--a, 1)) * 100%) 0 0 0); }
+.scene[data-enter="iris"]    { clip-path: circle(calc(var(--a, 1) * 86%) at 50% 46%); }
+.scene[data-enter="fold"] {
+  transform: translateY(calc((1 - var(--a, 1)) * 46%)) rotateX(calc((1 - var(--a, 1)) * 17deg));
+  transform-origin: 50% 100%;
+  opacity: clamp(0, var(--a, 1) * 1.5, 1);
+}
+
+/* ---------- departure ---------- */
+.scene-body {
+  position: absolute; inset: 0; overflow: hidden;
+  transform: scale(calc(1 - var(--o, 0) * .08)) translateY(calc(var(--o, 0) * -5%));
+  filter: brightness(calc(1 - var(--o, 0) * .55));
+  will-change: transform, filter;
+}
+.scene[data-exit="rise"]  .scene-body { transform: translateY(calc(var(--o, 0) * -32%)); }
+.scene[data-exit="slide"] .scene-body { transform: translateX(calc(var(--o, 0) * -26%)); }
+.scene[data-exit="hold"]  .scene-body { transform: none; filter: brightness(calc(1 - var(--o, 0) * .62)); }
+
+.scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* a wash of the page ground, so the copy holds contrast over any field in
+   either theme without the field itself having to be quiet */
+.scene-tint {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 86% at 50% 42%, transparent 26%, rgba(var(--ground-rgb), .74) 100%),
+    linear-gradient(180deg, rgba(var(--ground-rgb), .5), rgba(var(--ground-rgb), .1) 30%,
+                    rgba(var(--ground-rgb), .12) 66%, rgba(var(--ground-rgb), .68));
+}
+.scene-in {
+  position: relative; z-index: 2; height: 100%;
+  display: grid; align-content: center;
+  padding: clamp(80px, 12vh, 140px) 0 clamp(60px, 9vh, 110px);
+}
+.scene-copy {
+  transform: translateY(calc((1 - var(--a, 1)) * 34px + var(--o, 0) * -44px));
+  opacity: clamp(0, var(--a, 1) * 2 - .35, 1);
+  max-width: 46ch;
+}
+.scene-copy .k { display: block; color: var(--gold); margin-bottom: 14px; }
+.scene-copy h2 {
+  font-family: "Bodoni Moda", Didot, Georgia, serif; font-weight: 500;
+  font-size: clamp(2.3rem, 7vw, 5.2rem); letter-spacing: -.034em; line-height: .92;
+  margin: 0 0 18px; color: var(--paper); text-wrap: balance;
+}
+.scene-copy h2 .it { font-style: italic; color: var(--gold); }
+.scene-copy p { color: var(--paper-2); margin: 0 0 22px; font-size: clamp(1rem, 1.6vw, 1.12rem); }
+.scene-spec { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.scene-spec li {
+  padding: 6px 11px; border-radius: 2px;
+  border: 1px solid var(--line);
+  background: rgba(var(--sf-1), .5);
+  backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
+  font-family: "IBM Plex Mono", monospace; font-size: .57rem;
+  letter-spacing: .15em; text-transform: uppercase; color: var(--paper-2);
+}
+.scene-spec li b { color: var(--gold); font-weight: 500; }
+
+/* the transition label: names what you are watching happen */
+.scene-tag {
+  position: absolute; z-index: 3; right: clamp(18px, 3vw, 40px); top: clamp(88px, 12vh, 128px);
+  display: flex; align-items: center; gap: 10px;
+  font-family: "IBM Plex Mono", monospace; font-size: .58rem;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--paper-3);
+  opacity: clamp(0, var(--a, 1) * 2 - .6, 1);
+}
+.scene-tag b { color: var(--gold-hi); font-weight: 500; }
+.scene-tag i { width: 26px; height: 1px; background: var(--gold-lo); }
+
+/* the rail: which scene, and how far through the rig */
+.scenes-rail {
+  position: absolute; z-index: 8; left: clamp(16px, 3vw, 40px); top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+}
+.scenes-rail span {
+  width: 2px; height: 26px; background: var(--line-hi); border-radius: 1px;
+  transition: background-color .45s var(--ease), height .45s var(--ease);
+}
+.scenes-rail span.on { background: var(--gold); height: 40px; }
+
+/* ============================================================
+   29. PARALLAX BAND — the same idea at section scale: three grounds
+   at three rates, driven by the band the section already exposes.
+   ============================================================ */
+.plx {
+  position: relative; overflow: hidden;
+  height: clamp(420px, 62vh, 660px);
+  border-block: 1px solid var(--line-2);
+}
+.plx-l { position: absolute; inset: -18% 0; will-change: transform; }
+.plx-l canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.plx-l:nth-child(1) { transform: translateY(calc(var(--k, 0) * -6%)); }
+.plx-l:nth-child(2) { transform: translateY(calc(var(--k, 0) * -18%)); }
+.plx-l:nth-child(3) { transform: translateY(calc(var(--k, 0) * -34%)); }
+.plx-veil {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: radial-gradient(72% 62% at 50% 50%, rgba(var(--ground-rgb), .82), rgba(var(--ground-rgb), .3));
+}
+.plx-in {
+  position: relative; z-index: 3; height: 100%;
+  display: grid; place-items: center; text-align: center; padding: 0 24px;
+}
+.plx-in .inner { max-width: 46ch; }
+.plx-in h3 {
+  font-family: "Bodoni Moda", Georgia, serif; font-weight: 500;
+  font-size: clamp(1.8rem, 5vw, 3.4rem); letter-spacing: -.03em; line-height: 1;
+  margin: 0 0 14px; color: var(--paper);
+}
+.plx-in p { color: var(--paper-2); margin: 0; }
+
+/* ============================================================
+   30. FIELD INDEX — every ground on one screen, labelled
+   ============================================================ */
+.fgrid {
+  display: grid; gap: clamp(10px, 1.4vw, 16px);
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+}
+.fcell {
+  position: relative; aspect-ratio: 16 / 10; overflow: hidden;
+  border: 1px solid var(--line); border-radius: 3px;
+  background: linear-gradient(168deg, rgba(var(--sf-1), .6), rgba(var(--sf-2), .82));
+  box-shadow: inset 0 1px 0 var(--edge-2);
+  transition: border-color .45s var(--ease), transform .45s var(--ease), box-shadow .45s var(--ease);
+}
+.fcell:hover {
+  border-color: var(--gold-lo); transform: translateY(-3px);
+  box-shadow: inset 0 1px 0 var(--edge-3), 0 0 30px -14px rgba(var(--acc-rgb), .5);
+}
+.fcell canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.fcell::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, transparent 46%, rgba(var(--ground-rgb), .82));
+}
+.fcell b {
+  position: absolute; z-index: 2; left: 10px; bottom: 8px;
+  font-family: "IBM Plex Mono", monospace; font-size: .55rem; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--gold);
+}
+.fcell em {
+  position: absolute; z-index: 2; right: 10px; top: 8px; font-style: normal;
+  font-family: "IBM Plex Mono", monospace; font-size: .5rem;
+  letter-spacing: .14em; color: var(--paper-3);
+}
+
 /* ============================================================
    26. RESPONSIVE
    ============================================================ */
@@ -1722,6 +1899,9 @@
   .ledg-in { padding-left: clamp(18px, 4vw, 30px); }
   .gal { height: 260vh; }
   .seal-terms { gap: 12px; }
+  .scene-tag { display: none; }
+  .scenes-rail { left: 10px; }
+  .scene-copy h2 { font-size: clamp(2rem, 9vw, 3rem); }
 }
 
 /* ============================================================
@@ -1764,6 +1944,18 @@
   .dt-lab .seal-glow { opacity: 1; }
 
   .helix-sp { transform: rotateX(-6deg) rotateY(-40deg); }
+
+  /* the scene rig becomes a plain run of full-height sections */
+  .scenes-pin { height: auto; overflow: visible; transform: none !important; }
+  .scene {
+    position: relative; inset: auto; height: 100vh;
+    transform: none !important; clip-path: none !important; opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .scene-body { transform: none !important; filter: none !important; }
+  .scene-copy { transform: none; opacity: 1; }
+  .scene-tag { opacity: 1; }
+  .plx-l { transform: none !important; }
 
   .flow-track, .flow-f { transform: none !important; }
   .flow { -webkit-mask-image: none; mask-image: none; overflow-x: auto; }
