@@ -1451,8 +1451,22 @@
     gals.forEach(function (g) {
       var pct = $('.gal-rail b', g);
       var hold = $('.gal-pin', g);
+      var hero = $('.gal-hero', g);
       var drive = hold ? pin(g, hold) : null;
       var last = -1;
+
+      /* The plate is laid out full-bleed, so its START scale is whatever
+         makes it match a grid cell. Measured rather than guessed: the cell
+         width comes out of a clamp() and the plate's out of max(). */
+      function fitPlate() {
+        if (!hero) return;
+        var cell = $('.gal-i', g);
+        var w = hero.offsetWidth;
+        if (!cell || !w) return;
+        g.style.setProperty('--s0', (cell.offsetWidth / w).toFixed(4));
+      }
+      fitPlate();
+      addEventListener('resize', fitPlate, { passive: true });
       loop(g, function () {
         if (drive) drive();
         var k = progress(g, 'through');

@@ -20,7 +20,7 @@ const path = require('path');
 /* The tag the generated bundles point their images at. A Webflow page
    cannot resolve ./img/, so the build rewrites those to the CDN --
    which means BUMPING THIS IS PART OF CUTTING A RELEASE. */
-const VERSION = 'v1.9.0';
+const VERSION = 'v1.9.1';
 const CDN = `https://cdn.jsdelivr.net/gh/Alexander-DT/dt-craft@${VERSION}`;
 
 const ROOT = __dirname;

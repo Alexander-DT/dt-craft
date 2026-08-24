@@ -534,7 +534,11 @@
    of the grid to full bleed. Driven by --k, so it scrubs with the
    scrollbar rather than firing once and being done.
    ============================================================ */
-.gal { position: relative; z-index: 1; height: 320vh; }
+.gal {
+  position: relative; z-index: 1; height: 320vh;
+  /* on the section, not the plate, so the columns can read it too */
+  --gk: clamp(0, (var(--k, 0) - .14) * 1.62, 1);
+}
 /* NOT position:sticky. The smooth scroll is transform-based, so #vp is a
    scrollport that never scrolls and a sticky child would simply ride the
    transform. The pin offset is scrubbed in JS instead, which behaves the
@@ -559,6 +563,9 @@
 .gal-col:nth-child(5) { transform: translateY(calc(var(--k, 0) * -30vh + 14vh)); }
 .gal-i {
   position: relative; overflow: hidden; border-radius: 3px;
+  /* <figure> carries the UA's margin: 1em 40px. Left alone, every cell is
+     80px narrower than its column and offset inside it. */
+  margin: 0;
   border: 1px solid var(--line-2);
   aspect-ratio: 3 / 4;
   box-shadow: inset 0 1px 0 var(--edge-1), 0 22px 46px -32px var(--cast-1);
@@ -568,16 +575,33 @@
 .gal-i img, .gal-i .gplate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .gal-i img { filter: grayscale(var(--img-dim)) contrast(1.03); }
 
-/* the plate that takes the screen */
+/* The plate that takes the screen.
+
+   Laid out at the size it ENDS at and scaled down, never up: scaling a
+   340px plate to six times its size rasterises it at 340px and it arrives
+   soft. This way the raster is the full-bleed one the whole way through,
+   and the small end is the over-sampled one — which is the harmless
+   direction to be wrong in.
+
+   It also travels with the centre column until it starts taking over.
+   Without that it sits dead still over a moving grid and reads as an
+   overlay pasted on top rather than a tile lifting out. */
 .gal-hero {
   position: relative; z-index: 3;
-  width: clamp(200px, 26vw, 340px); aspect-ratio: 4 / 5;
-  border: 1px solid var(--line); border-radius: 3px; overflow: hidden;
-  box-shadow: inset 0 1px 0 var(--edge-3), 0 48px 96px -46px var(--cast-2);
-  --gk: clamp(0, (var(--k, 0) - .16) * 1.72, 1);
-  transform: scale(calc(1 + var(--gk) * 5.2));
+  margin: 0;
+  width: max(100vw, 160vh); aspect-ratio: 16 / 10;
+  border-radius: calc(3px * (1 - var(--gk)));
+  overflow: hidden;
+  box-shadow: 0 48px 96px -46px var(--cast-2);
+  --colY: calc(var(--k, 0) * -22vh - 6vh);
+  transform:
+    translateY(calc(var(--colY) * (1 - var(--gk))))
+    scale(calc(var(--s0, .18) + (1 - var(--s0, .18)) * var(--gk)));
   will-change: transform;
 }
+/* and nothing of the grid should still be sitting behind it by the time
+   it is the subject */
+.gal-col:nth-child(3) { opacity: calc(1 - var(--gk) * 1.08); }
 .gal-hero img, .gal-hero .gplate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .gal-hero img { filter: grayscale(calc((1 - var(--gk)) * 90%)) contrast(1.05); }
 .gal-hero::after {
@@ -1116,6 +1140,7 @@
 @media (min-width: 920px) { .spot-main { grid-template-columns: .82fr 1.18fr; } }
 .spot-shot {
   position: relative; aspect-ratio: 4 / 5; border-radius: 3px; overflow: hidden;
+  margin: 0;
   border: 1px solid var(--line);
   box-shadow: inset 0 1px 0 var(--edge-3), 0 36px 72px -42px var(--cast-2);
 }
@@ -1461,6 +1486,7 @@
 @media (min-width: 860px) { .seal-in { grid-template-columns: auto 1fr; } }
 .seal {
   position: relative; width: clamp(150px, 20vw, 216px); height: clamp(150px, 20vw, 216px);
+  margin: 0;
   justify-self: center;
 }
 .seal svg { width: 100%; height: 100%; overflow: visible; }
@@ -1984,6 +2010,7 @@
 }
 .hp-c {
   position: relative; flex: 0 0 auto;
+  margin: 0;
   width: clamp(230px, 26vw, 360px); height: clamp(300px, 38vw, 460px);
   border: 1px solid var(--line); border-radius: 3px; overflow: hidden;
   background: rgba(var(--sf-2), .92);
